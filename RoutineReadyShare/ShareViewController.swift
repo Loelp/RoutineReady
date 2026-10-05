@@ -2,9 +2,9 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-/// "Add to inspection": files photos shared from the Photos app against one of today's inspections.
-/// It only writes to the App Group (photos to `Photos/`, one `SharedInboxRecord` per photo to `Inbox/`)
-/// and never touches Core Data. The app files the records as maintenance items when it next becomes active.
+// "Add to inspection" share extension.
+// It only saves files into the App Group (the photo into Photos, and a SharedInboxRecord into Inbox)
+// and never touches Core Data. The app picks them up and makes the maintenance items next time it opens.
 class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +26,7 @@ class ShareViewController: UIViewController {
         host.didMove(toParent: self)
     }
 
-    /// Today's inspections, as last written by the app to `share-inspections.json`.
+    // today's inspections, from the list the app saved
     private func loadShareableInspections() -> [ShareableInspection] {
         guard let data = try? Data(contentsOf: AppGroup.shareInspectionsURL),
               let inspections = try? AppGroupJSON.decode([ShareableInspection].self, from: data) else {
@@ -35,7 +35,7 @@ class ShareViewController: UIViewController {
         return inspections
     }
 
-    /// The shared attachments that are images (the activation rule allows up to 10).
+    // the images that were shared (Info.plist limits it to 10)
     private func imageProviders() -> [NSItemProvider] {
         var providers: [NSItemProvider] = []
         let items = extensionContext?.inputItems as? [NSExtensionItem] ?? []
@@ -70,7 +70,7 @@ class ShareViewController: UIViewController {
                     print("Could not save shared photo: \(error)")
                 }
             }
-            // Always dismiss, even if a photo could not be read.
+            // close the sheet no matter what, even if one of the photos didn't work
             extensionContext?.completeRequest(returningItems: nil)
         }
     }
@@ -80,6 +80,7 @@ class ShareViewController: UIViewController {
         extensionContext?.cancelRequest(withError: error)
     }
 
+    // loadDataRepresentation uses a completion handler, so this wraps it to use with await
     private func loadImageData(from provider: NSItemProvider) async -> Data? {
         return await withCheckedContinuation { continuation in
             provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in

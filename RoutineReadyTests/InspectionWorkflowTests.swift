@@ -1,7 +1,8 @@
 import XCTest
 @testable import RoutineReady
 
-/// Completing inspections, logging maintenance and filing shared photos. "Now" is Wed 7 Oct 2026, 9:00 am.
+// Tests for completing inspections, logging maintenance and importing shared photos.
+// "Now" is Wed 7 Oct 2026, 9am (see InspectionFixture).
 @MainActor
 final class InspectionWorkflowTests: XCTestCase {
     private var fixture: InspectionFixture!

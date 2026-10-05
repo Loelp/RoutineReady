@@ -3,22 +3,22 @@ import WidgetKit
 
 struct NextInspectionEntry: TimelineEntry {
     let date: Date
-    /// `nil` when there are no more inspections today.
+    // nil when there's nothing left today
     let inspection: WidgetSnapshot.UpcomingInspection?
     let urgentMaintenanceCount: Int
-    /// `false` until the app has written its first snapshot.
+    // false if the app hasn't saved a snapshot yet
     let hasSnapshot: Bool
 }
 
-/// Builds the widget timeline from `widget-snapshot.json` in the App Group. It never opens Core Data.
+// Reads widget-snapshot.json from the App Group and makes the timeline. Doesn't touch Core Data.
 struct NextInspectionProvider: TimelineProvider {
     func placeholder(in context: Context) -> NextInspectionEntry {
-        return Self.sampleEntry
+        return NextInspectionProvider.sampleEntry
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextInspectionEntry) -> Void) {
         if context.isPreview {
-            completion(Self.sampleEntry)
+            completion(NextInspectionProvider.sampleEntry)
         } else {
             completion(entry(at: Date(), from: readSnapshot()))
         }
@@ -29,8 +29,8 @@ struct NextInspectionProvider: TimelineProvider {
         let now = Date()
         var entries = [entry(at: now, from: snapshot)]
 
-        // Refresh once the next inspection has started, so the one after it shows up.
-        // With nothing left today, refresh at midnight. The app also reloads the widget after every change.
+        // Ask for a new timeline once the next inspection starts so the one after it shows.
+        // If there's nothing left, wait until midnight. (The app also reloads the widget whenever something changes.)
         var refreshDate = Calendar.current.startOfDay(for: now).addingTimeInterval(24 * 60 * 60)
         if let next = snapshot?.nextInspection(after: now) {
             entries.append(entry(at: next.scheduledAt, from: snapshot))
@@ -55,7 +55,7 @@ struct NextInspectionProvider: TimelineProvider {
         return try? AppGroupJSON.decode(WidgetSnapshot.self, from: data)
     }
 
-    /// Shown in the widget gallery before the user adds the widget.
+    // fake data for the widget gallery
     static let sampleEntry = NextInspectionEntry(
         date: Date(),
         inspection: WidgetSnapshot.UpcomingInspection(scheduledAt: Date().addingTimeInterval(45 * 60), address: "14 Rose St", suburb: "Yagoona"),

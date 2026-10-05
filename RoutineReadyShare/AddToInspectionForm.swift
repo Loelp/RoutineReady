@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The share sheet form: which inspection, which room, and an optional note.
+// The form in the share sheet - pick the inspection and room, and add a note if you want
 struct AddToInspectionForm: View {
     let inspections: [ShareableInspection]
     let photoCount: Int
@@ -36,7 +36,7 @@ struct AddToInspectionForm: View {
                     }
                     Section("Details") {
                         Picker("Room", selection: $room) {
-                            ForEach(Self.rooms, id: \.self) { room in
+                            ForEach(AddToInspectionForm.rooms, id: \.self) { room in
                                 Text(room)
                             }
                         }
@@ -79,7 +79,7 @@ struct AddToInspectionForm: View {
         onSave(inspection, room, note.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
-    /// Sydney time, e.g. "11:15 am".
+    // Sydney time, e.g. "11:15 am"
     private func timeText(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_AU")

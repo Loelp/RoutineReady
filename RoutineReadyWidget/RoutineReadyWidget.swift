@@ -1,7 +1,7 @@
 import SwiftUI
 import WidgetKit
 
-/// "Next inspection": where the property manager needs to be next, glanceable between stops.
+// "Next inspection" widget - shows where to go next without opening the app
 struct RoutineReadyWidget: Widget {
     let kind = "RoutineReadyWidget"
 
@@ -67,7 +67,7 @@ struct NextInspectionWidgetView: View {
         }
     }
 
-    /// e.g. "11:15 · 14 Rose St, Yagoona"
+    // lock screen version, e.g. "11:15 · 14 Rose St, Yagoona"
     private var lockScreenView: some View {
         VStack(alignment: .leading) {
             Text("Next inspection")
@@ -93,7 +93,7 @@ struct NextInspectionWidgetView: View {
         }
     }
 
-    /// Sydney time, e.g. "11:15 am" or "11:15".
+    // Sydney time, e.g. "11:15 am" (or "11:15" for the lock screen)
     private func timeText(_ date: Date, withAmPm: Bool) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_AU")
