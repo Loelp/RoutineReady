@@ -6,7 +6,7 @@ struct FixedClock: DateProviding {
     var now: Date
 }
 
-final class WidgetSnapshotSpy: WidgetSnapshotWriting {
+class WidgetSnapshotSpy: WidgetSnapshotWriting {
     private(set) var refreshCount = 0
 
     func refreshWidgetSnapshot() {
@@ -22,15 +22,15 @@ struct StubPublicHolidays: NSWPublicHolidays {
     }
 }
 
-/// A date and time in Sydney, e.g. `sydney(2026, 10, 14, 10, 0)`.
+// makes a Sydney date, e.g. sydney(2026, 10, 14, 10, 0) is 14 Oct 2026 at 10am
 func sydney(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0) -> Date {
     Calendar.sydney.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
 }
 
-/// A small portfolio and every use case wired to in-memory repositories.
-/// "Now" is Wednesday 7 October 2026, 9:00 am in Sydney.
+// One property plus all the use cases set up with in-memory repositories.
+// "Now" is always Wednesday 7 October 2026, 9am Sydney time.
 @MainActor
-final class InspectionFixture {
+class InspectionFixture {
     let property = Property(
         id: UUID(), address: "14 Rose St", suburb: "Yagoona",
         tenantName: "Mia Nguyen", landlordName: "Peter Haddad", tenancyStartDate: sydney(2025, 2, 1)
@@ -62,7 +62,7 @@ final class InspectionFixture {
         ImportSharedPhotos(inbox: inbox, logMaintenanceItem: logMaintenanceItem)
     }
 
-    /// Adds an inspection directly to the repository, bypassing the booking rules.
+    // puts an inspection straight into the repository (skips the booking rules) - handy for setting up history
     @discardableResult
     func existingInspection(at scheduledAt: Date, status: InspectionStatus = .completed) throws -> RoutineInspection {
         let inspection = RoutineInspection(
@@ -85,7 +85,7 @@ final class InspectionFixture {
 }
 
 extension XCTestCase {
-    /// Asserts that `body` throws exactly `expected`.
+    // checks that the code throws exactly this error
     func assertThrows<E: Error & Equatable>(_ expected: E, file: StaticString = #filePath, line: UInt = #line, _ body: () throws -> Void) {
         XCTAssertThrowsError(try body(), file: file, line: line) { error in
             XCTAssertEqual(error as? E, expected, file: file, line: line)

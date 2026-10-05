@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A small square preview of a defect photo stored in the App Group `Photos/` folder.
+// small square preview of a photo from the App Group Photos folder
 struct DefectPhotoThumbnail: View {
     let filename: String
 

@@ -1,7 +1,7 @@
 import Foundation
 
-/// Composition root. Builds the repositories once and gives each screen's view model the use cases it needs.
-/// This is the only place that knows Core Data is behind the repository protocols.
+// Creates the repositories once and hands each view model the use cases it needs.
+// This is the only file that knows the repositories are Core Data ones.
 @MainActor
 class AppDependencies {
     let properties: PropertyRepository
@@ -21,7 +21,7 @@ class AppDependencies {
         self.photosDirectory = photosDirectory
     }
 
-    /// The real app: Core Data, the App Group and the system clock.
+    // used by the real app
     static func live() -> AppDependencies {
         let persistence = PersistenceController()
         let properties = CoreDataPropertyRepository(context: persistence.context)
@@ -43,7 +43,7 @@ class AppDependencies {
         )
     }
 
-    /// SwiftUI previews: in-memory repositories with the demo portfolio.
+    // used by the SwiftUI previews (in-memory data, nothing saved)
     static func preview() -> AppDependencies {
         let properties = InMemoryPropertyRepository()
         let inspections = InMemoryInspectionRepository()
@@ -59,7 +59,8 @@ class AppDependencies {
         )
     }
 
-    /// Files photos waiting from the share extension and refreshes the widget. Run on launch and whenever the app becomes active.
+    // called on launch and every time the app comes back to the foreground:
+    // file any photos from the share extension, and update the widget
     func appBecameActive() {
         do {
             try importSharedPhotos.execute()
@@ -134,7 +135,7 @@ class AppDependencies {
     }
 }
 
-/// Previews don't have a widget to refresh.
+// previews don't have a widget, so this does nothing
 struct PreviewWidgetSnapshotWriter: WidgetSnapshotWriting {
     func refreshWidgetSnapshot() {}
 }

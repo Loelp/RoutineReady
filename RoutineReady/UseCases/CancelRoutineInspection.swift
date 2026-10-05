@@ -1,7 +1,7 @@
 import Foundation
 
-/// Cancels a booked routine inspection. A cancelled inspection no longer counts toward the
-/// 4-in-12-months limit, so the tenant's allowance is freed up straight away.
+/// Cancels a booked inspection. Cancelled inspections don't count toward the 4 per year limit,
+/// so this frees up a spot for that property.
 struct CancelRoutineInspection {
     let inspections: InspectionRepository
     let widgetSnapshot: WidgetSnapshotWriting
@@ -10,9 +10,10 @@ struct CancelRoutineInspection {
         guard var inspection = try inspections.inspection(withID: inspectionID) else {
             throw InspectionCancellationError.inspectionNotFound
         }
-        guard inspection.status != .completed else {
+        if inspection.status == .completed {
             throw InspectionCancellationError.alreadyCompleted
         }
+
         inspection.status = .cancelled
         try inspections.save(inspection)
         widgetSnapshot.refreshWidgetSnapshot()
@@ -25,15 +26,19 @@ enum InspectionCancellationError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .alreadyCompleted: "A completed inspection can't be cancelled."
-        case .inspectionNotFound: "This inspection is no longer in your diary."
+        case .alreadyCompleted:
+            return "You can't cancel an inspection that's already been completed."
+        case .inspectionNotFound:
+            return "This inspection couldn't be found."
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
-        case .alreadyCompleted: "Its condition report stays on the property's history."
-        case .inspectionNotFound: "Refresh the property's page and try again."
+        case .alreadyCompleted:
+            return "Its condition report stays in the property's history."
+        case .inspectionNotFound:
+            return "Go back and open the property again."
         }
     }
 }

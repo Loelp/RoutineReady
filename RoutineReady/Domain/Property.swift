@@ -1,6 +1,6 @@
 import Foundation
 
-/// A rental property in the property manager's portfolio.
+// A rental property in the portfolio
 struct Property: Identifiable, Equatable, Hashable {
     let id: UUID
     var address: String

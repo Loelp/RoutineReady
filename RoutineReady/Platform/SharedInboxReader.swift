@@ -1,7 +1,7 @@
 import Foundation
 
-/// Reads the `SharedInboxRecord` files the share extension leaves in the App Group `Inbox/` folder,
-/// one `<id>.json` file per photo, and deletes them once they are filed.
+// Reads the SharedInboxRecord files the share extension puts in the Inbox folder
+// (one <id>.json per photo), and deletes them once they've been filed.
 class SharedInboxReader: SharedPhotoInbox {
     private let inboxDirectory: URL
 
@@ -13,6 +13,7 @@ class SharedInboxReader: SharedPhotoInbox {
         let files = try FileManager.default.contentsOfDirectory(at: inboxDirectory, includingPropertiesForKeys: nil)
         var records: [SharedInboxRecord] = []
         for file in files where file.pathExtension == "json" {
+            // skip anything that doesn't decode instead of failing the whole import
             if let data = try? Data(contentsOf: file),
                let record = try? AppGroupJSON.decode(SharedInboxRecord.self, from: data) {
                 records.append(record)

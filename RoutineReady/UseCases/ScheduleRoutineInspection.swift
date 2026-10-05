@@ -1,11 +1,12 @@
 import Foundation
 
-/// Books a routine inspection only when NSW law allows it (Residential Tenancies Act 2010 s 55):
-/// 1. at least 7 days written notice, counted in calendar days in Sydney;
-/// 2. no more than 4 non-cancelled inspections in the rolling 12 months up to and including the proposed date;
-/// 3. not on a Sunday or NSW public holiday;
-/// 4. starting between 08:00 and 19:59.
-/// If the tenant has agreed in writing, rules 1, 3 and 4 are waived but rule 2 still applies.
+/// Books a routine inspection, but only if it follows the NSW rules (Residential Tenancies Act 2010 s 55):
+/// 1. at least 7 days written notice (counting calendar days in Sydney time)
+/// 2. no more than 4 inspections (not counting cancelled ones) in the 12 months up to the inspection date
+/// 3. not on a Sunday or NSW public holiday
+/// 4. must start between 8:00 am and 7:59 pm
+///
+/// If the tenant has agreed in writing, rules 1, 3 and 4 don't apply. Rule 2 always applies.
 struct ScheduleRoutineInspection {
     let properties: PropertyRepository
     let inspections: InspectionRepository
@@ -16,17 +17,20 @@ struct ScheduleRoutineInspection {
 
     @discardableResult
     func execute(propertyID: UUID, scheduledAt: Date, noticeServedAt: Date, tenantConsentRecorded: Bool) throws -> RoutineInspection {
-        guard try properties.property(withID: propertyID) != nil else {
+        if try properties.property(withID: propertyID) == nil {
             throw InspectionSchedulingError.propertyNotFound
         }
-        guard scheduledAt > clock.now else {
+        if scheduledAt <= clock.now {
             throw InspectionSchedulingError.inspectionInThePast
         }
+
         if !tenantConsentRecorded {
-            try checkNotice(servedAt: noticeServedAt, before: scheduledAt)
-            try checkDay(of: scheduledAt)
-            try checkStartTime(of: scheduledAt)
+            try checkNotice(noticeServedAt: noticeServedAt, scheduledAt: scheduledAt)
+            try checkDay(scheduledAt)
+            try checkStartTime(scheduledAt)
         }
+
+        // this one is checked even when the tenant has agreed
         try checkAnnualLimit(propertyID: propertyID, proposedDate: scheduledAt)
 
         let inspection = RoutineInspection(
@@ -42,15 +46,18 @@ struct ScheduleRoutineInspection {
         return inspection
     }
 
-    private func checkNotice(servedAt noticeServedAt: Date, before scheduledAt: Date) throws {
+    private func checkNotice(noticeServedAt: Date, scheduledAt: Date) throws {
+        // compare whole days, not hours, so serving notice at 4pm still counts for that day
         let noticeDay = calendar.startOfDay(for: noticeServedAt)
-        let days = calendar.dateComponents([.day], from: noticeDay, to: calendar.startOfDay(for: scheduledAt)).day!
-        guard days >= RoutineInspectionRules.minimumNoticeDays else {
+        let inspectionDay = calendar.startOfDay(for: scheduledAt)
+        let daysOfNotice = calendar.dateComponents([.day], from: noticeDay, to: inspectionDay).day!
+
+        if daysOfNotice < RoutineInspectionRules.minimumNoticeDays {
             throw InspectionSchedulingError.insufficientNotice(earliestLawfulDate: earliestLawfulDate(noticeDay: noticeDay))
         }
     }
 
-    /// Seven days after the notice, moved past any Sunday or public holiday.
+    // 7 days after the notice. If that lands on a Sunday or holiday, keep moving forward a day.
     private func earliestLawfulDate(noticeDay: Date) -> Date {
         var date = calendar.date(byAdding: .day, value: RoutineInspectionRules.minimumNoticeDays, to: noticeDay)!
         while isSunday(date) || publicHolidays.holidayName(on: date) != nil {
@@ -59,7 +66,7 @@ struct ScheduleRoutineInspection {
         return date
     }
 
-    private func checkDay(of scheduledAt: Date) throws {
+    private func checkDay(_ scheduledAt: Date) throws {
         if let holidayName = publicHolidays.holidayName(on: scheduledAt) {
             throw InspectionSchedulingError.sundayOrPublicHoliday(holidayName: holidayName)
         }
@@ -68,28 +75,32 @@ struct ScheduleRoutineInspection {
         }
     }
 
-    private func checkStartTime(of scheduledAt: Date) throws {
-        guard RoutineInspectionRules.permittedStartHours.contains(calendar.component(.hour, from: scheduledAt)) else {
+    private func checkStartTime(_ scheduledAt: Date) throws {
+        let hour = calendar.component(.hour, from: scheduledAt)
+        if !RoutineInspectionRules.permittedStartHours.contains(hour) {
             throw InspectionSchedulingError.outsidePermittedHours
         }
     }
 
-    /// Queries the window every time rather than keeping a counter, so cancellations and edits are always reflected.
+    // The count is looked up from the database every time instead of being stored,
+    // so cancelling an inspection frees up a spot straight away.
     private func checkAnnualLimit(propertyID: UUID, proposedDate: Date) throws {
-        let counted = try inspections.inspectionsCountingTowardAnnualLimit(
-            propertyID: propertyID,
-            from: RoutineInspectionRules.annualWindowStart(endingAt: proposedDate, calendar: calendar),
-            through: proposedDate
-        )
-        guard counted.count >= RoutineInspectionRules.annualLimit else { return }
-        // Booking becomes possible once enough of the oldest inspections are more than 12 months old.
-        let mustLapse = counted[counted.count - RoutineInspectionRules.annualLimit]
-        let lapsesAt = calendar.date(byAdding: .year, value: 1, to: mustLapse.scheduledAt)!
-        throw InspectionSchedulingError.annualLimitReached(nextAvailableDate: lapsesAt)
+        let windowStart = RoutineInspectionRules.annualWindowStart(endingAt: proposedDate, calendar: calendar)
+        let counted = try inspections.inspectionsCountingTowardAnnualLimit(propertyID: propertyID, from: windowStart, through: proposedDate)
+
+        if counted.count < RoutineInspectionRules.annualLimit {
+            return
+        }
+
+        // Already at the limit. A new booking is allowed once the oldest one is more than
+        // 12 months old. (The list is oldest first, so with exactly 4 it's the first one.)
+        let oldest = counted[counted.count - RoutineInspectionRules.annualLimit]
+        let nextAvailableDate = calendar.date(byAdding: .year, value: 1, to: oldest.scheduledAt)!
+        throw InspectionSchedulingError.annualLimitReached(nextAvailableDate: nextAvailableDate)
     }
 
     private func isSunday(_ date: Date) -> Bool {
-        calendar.component(.weekday, from: date) == 1
+        return calendar.component(.weekday, from: date) == 1
     }
 }
 
@@ -104,36 +115,37 @@ enum InspectionSchedulingError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .insufficientNotice(let earliestLawfulDate):
-            "This tenant needs 7 days written notice. The earliest lawful date is \(earliestLawfulDate.inspectionDayText)."
+            return "This tenant needs 7 days written notice. The earliest lawful date is \(earliestLawfulDate.inspectionDayText)."
         case .annualLimitReached:
-            "This property has already had 4 routine inspections in the 12 months before this date, the most NSW law allows."
-        case .sundayOrPublicHoliday(let holidayName?):
-            "Routine inspections can't be held on \(holidayName), an NSW public holiday."
-        case .sundayOrPublicHoliday(nil):
-            "Routine inspections can't be held on a Sunday."
+            return "This property has already had 4 routine inspections in the 12 months before this date, which is the most NSW law allows."
+        case .sundayOrPublicHoliday(let holidayName):
+            if let holidayName = holidayName {
+                return "Routine inspections can't be held on \(holidayName) because it's an NSW public holiday."
+            }
+            return "Routine inspections can't be held on a Sunday."
         case .outsidePermittedHours:
-            "Routine inspections must start between 8:00 am and 8:00 pm."
+            return "Routine inspections have to start between 8:00 am and 8:00 pm."
         case .inspectionInThePast:
-            "This time has already passed."
+            return "That time has already passed."
         case .propertyNotFound:
-            "This property is no longer in your portfolio."
+            return "This property isn't in your portfolio any more."
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
         case .insufficientNotice(let earliestLawfulDate):
-            "Choose \(earliestLawfulDate.inspectionDayText) or later, or record the tenant's written agreement to an earlier time."
+            return "Pick \(earliestLawfulDate.inspectionDayText) or later, or tick that the tenant has agreed in writing to an earlier time."
         case .annualLimitReached(let nextAvailableDate):
-            "The next routine inspection can be booked after \(nextAvailableDate.inspectionTimeText) on \(nextAvailableDate.inspectionDayText), when the oldest of the four falls outside the 12 months."
+            return "You can book the next one after \(nextAvailableDate.inspectionTimeText) on \(nextAvailableDate.inspectionDayText), when the oldest of the 4 drops out of the 12 months."
         case .sundayOrPublicHoliday:
-            "Pick a Monday to Saturday that isn't a public holiday, or record the tenant's written agreement to this day."
+            return "Pick a day from Monday to Saturday that isn't a public holiday, or tick that the tenant has agreed in writing."
         case .outsidePermittedHours:
-            "Choose a start time from 8:00 am to 7:59 pm, or record the tenant's written agreement to this time."
+            return "Pick a start time from 8:00 am to 7:59 pm, or tick that the tenant has agreed in writing."
         case .inspectionInThePast:
-            "Choose a date and time later than now."
+            return "Pick a date and time later than now."
         case .propertyNotFound:
-            "Go back to the portfolio and choose the property again."
+            return "Go back to the portfolio and pick the property again."
         }
     }
 }

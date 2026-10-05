@@ -1,9 +1,9 @@
 import Foundation
 import WidgetKit
 
-/// After every change, rewrites the two small files the extensions read from the App Group, then reloads the widget:
-/// - `widget-snapshot.json`: the next inspection today and the urgent maintenance count, for the widget;
-/// - `share-inspections.json`: today's scheduled inspections, offered by the share extension's picker.
+// Runs after every change. Rewrites the two JSON files in the App Group and then reloads the widget:
+//  - widget-snapshot.json: next inspection today + urgent item count (for the widget)
+//  - share-inspections.json: today's inspections (for the picker in the share extension)
 class WidgetSnapshotWriter: WidgetSnapshotWriting {
     private let loadTodaysRunSheet: LoadTodaysRunSheet
     private let inspections: InspectionRepository
@@ -21,7 +21,7 @@ class WidgetSnapshotWriter: WidgetSnapshotWriting {
             try writeWidgetSnapshot(stops: stops)
             try writeShareInspections(stops: stops)
         } catch {
-            // The booking itself succeeded; a stale widget is not worth failing it for.
+            // the booking etc. already saved fine, so just log this rather than showing an error
             print("Could not refresh the widget snapshot: \(error)")
         }
         WidgetCenter.shared.reloadAllTimelines()
@@ -29,6 +29,7 @@ class WidgetSnapshotWriter: WidgetSnapshotWriting {
 
     private func writeWidgetSnapshot(stops: [RunSheetStop]) throws {
         var upcoming: [WidgetSnapshot.UpcomingInspection] = []
+        // only inspections that haven't started yet
         for stop in stops where stop.inspection.scheduledAt > clock.now {
             upcoming.append(WidgetSnapshot.UpcomingInspection(
                 scheduledAt: stop.inspection.scheduledAt,

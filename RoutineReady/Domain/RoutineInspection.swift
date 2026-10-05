@@ -4,7 +4,7 @@ enum InspectionStatus: String, CaseIterable {
     case scheduled, completed, cancelled
 }
 
-/// A routine ("general") inspection of a property, as limited by the Residential Tenancies Act 2010 (NSW) s 55.
+// A routine ("general") inspection of a property
 struct RoutineInspection: Identifiable, Equatable, Hashable {
     let id: UUID
     let propertyID: UUID
@@ -13,6 +13,6 @@ struct RoutineInspection: Identifiable, Equatable, Hashable {
     var status: InspectionStatus
     var conditionSummary: String?
     var completedAt: Date?
-    /// The tenant agreed in writing to this time, which waives the notice, day and hour rules.
+    // tenant agreed in writing - skips the notice/day/time rules but NOT the 4 per year limit
     var tenantConsentRecorded: Bool
 }

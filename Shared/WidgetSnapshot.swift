@@ -1,7 +1,7 @@
 import Foundation
 
-/// Everything the "Next inspection" widget shows, written by the app to `widget-snapshot.json`.
-/// The widget never opens Core Data; it only decodes this file.
+// What the widget shows. The app saves this to widget-snapshot.json after every change,
+// and the widget just reads the file (it never opens Core Data).
 nonisolated struct WidgetSnapshot: Codable, Equatable {
     struct UpcomingInspection: Codable, Equatable {
         let scheduledAt: Date
@@ -9,16 +9,26 @@ nonisolated struct WidgetSnapshot: Codable, Equatable {
         let suburb: String
     }
 
-    /// The next routine inspection still to start today, if any.
     let nextInspection: UpcomingInspection?
-    /// Today's inspections after `nextInspection`, so the timeline can move on without the app running.
+    // The rest of today's inspections. Without these the widget would keep showing
+    // the 11:15 one after 11:15 until the app was opened again.
     let laterToday: [UpcomingInspection]
-    /// Urgent maintenance items not yet resolved, across the whole portfolio.
     let urgentMaintenanceCount: Int
     let generatedAt: Date
 
-    /// The first inspection that has not started by `date`.
+    // the first inspection that hasn't started yet at this time
     func nextInspection(after date: Date) -> UpcomingInspection? {
-        ([nextInspection].compactMap { $0 } + laterToday).first { $0.scheduledAt > date }
+        var all: [UpcomingInspection] = []
+        if let nextInspection = nextInspection {
+            all.append(nextInspection)
+        }
+        all.append(contentsOf: laterToday)
+
+        for inspection in all {
+            if inspection.scheduledAt > date {
+                return inspection
+            }
+        }
+        return nil
     }
 }

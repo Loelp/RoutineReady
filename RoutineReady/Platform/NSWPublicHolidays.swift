@@ -1,14 +1,14 @@
 import Foundation
 
-/// NSW public holidays, on which routine inspections may not be held without the tenant's consent.
+// Routine inspections can't be booked on NSW public holidays (unless the tenant agrees)
 protocol NSWPublicHolidays {
-    /// The holiday's name if `date` falls on an NSW public holiday (Sydney time), otherwise `nil`.
+    // returns the holiday's name, or nil if it's a normal day
     func holidayName(on date: Date) -> String?
 }
 
-/// NSW public holidays for 2026 and 2027 as published by NSW Industrial Relations
-/// (Public Holidays Act 2010). The Bank Holiday is left out: it applies only to banks.
-/// Extend this list before 2028.
+// NSW public holidays for 2026 and 2027, copied from the NSW Industrial Relations website.
+// Bank Holiday is left out because it only applies to banks.
+// TODO: add 2028 before the end of 2027
 struct GazettedNSWPublicHolidays: NSWPublicHolidays {
     private static let holidays: [String: String] = [
         "2026-01-01": "New Year's Day",
@@ -39,8 +39,9 @@ struct GazettedNSWPublicHolidays: NSWPublicHolidays {
     ]
 
     func holidayName(on date: Date) -> String? {
+        // turn the date into "yyyy-MM-dd" (in Sydney time) and look it up
         let day = Calendar.sydney.dateComponents([.year, .month, .day], from: date)
         let key = String(format: "%04d-%02d-%02d", day.year!, day.month!, day.day!)
-        return Self.holidays[key]
+        return GazettedNSWPublicHolidays.holidays[key]
     }
 }

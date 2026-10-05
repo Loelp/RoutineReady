@@ -18,7 +18,7 @@ class SharedPhotosInboxViewModel {
         self.loadTodaysRunSheet = loadTodaysRunSheet
     }
 
-    /// Files whatever can be filed; anything left over is shown for reassignment.
+    // runs the import - whatever is left over gets shown on screen
     func load() {
         do {
             unfiledPhotos = try importSharedPhotos.execute().unfiled

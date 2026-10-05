@@ -1,13 +1,12 @@
 import CoreData
 
-/// Core Data storage for a `RoutineInspection`. Written by hand (codegen is Manual/None).
+// Core Data class for RoutineInspection. Codegen is set to Manual/None in the model so this is written by hand.
 @objc(RoutineInspectionEntity)
 class RoutineInspectionEntity: NSManagedObject {
     @NSManaged var id: UUID
     @NSManaged var scheduledAt: Date
     @NSManaged var noticeServedAt: Date
-    /// "scheduled", "completed" or "cancelled"
-    @NSManaged var status: String
+    @NSManaged var status: String   // "scheduled", "completed" or "cancelled"
     @NSManaged var conditionSummary: String?
     @NSManaged var completedAt: Date?
     @NSManaged var tenantConsentRecorded: Bool

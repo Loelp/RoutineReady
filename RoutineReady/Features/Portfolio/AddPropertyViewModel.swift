@@ -17,7 +17,7 @@ class AddPropertyViewModel {
         self.addPropertyToPortfolio = addPropertyToPortfolio
     }
 
-    /// Returns true if the property was added, so the sheet can close.
+    // returns true if it saved, so the sheet can close
     func save() -> Bool {
         do {
             try addPropertyToPortfolio.execute(address: address, suburb: suburb, tenantName: tenantName,

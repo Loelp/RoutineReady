@@ -1,7 +1,7 @@
 import XCTest
 @testable import RoutineReady
 
-/// Notice is served "now": Wednesday 7 October 2026, 9:00 am.
+// Tests for the booking rules. Unless a test says otherwise, notice is served "now" (Wed 7 Oct 2026, 9am).
 @MainActor
 final class ScheduleRoutineInspectionTests: XCTestCase {
     private var fixture: InspectionFixture!
@@ -31,7 +31,7 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
 
     func test_scheduling_earliestLawfulDate_skipsSundaysAndPublicHolidays() {
         fixture.holidays.holidays[sydney(2026, 10, 19)] = "Test Holiday"
-        // Notice on Sun 11 Oct makes Sun 18 Oct the 7th day; Mon 19 Oct is a holiday, so Tue 20 Oct is the earliest.
+        // notice on Sun 11 Oct -> 7 days later is Sun 18 Oct, Mon 19 Oct is a holiday, so it should be Tue 20 Oct
         assertThrows(InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 20))) {
             _ = try fixture.book(sydney(2026, 10, 16, 10, 0), noticeServedAt: sydney(2026, 10, 11, 12, 0))
         }
@@ -79,7 +79,7 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
     }
 
     func test_scheduling_annualLimitIsRolling_notCalendarYear() throws {
-        // Four in the last 13 months, but the oldest is outside the 12 months before the proposed date.
+        // 4 inspections in the last 13 months, but the first one is more than 12 months before the new date
         try fixture.existingInspection(at: sydney(2025, 9, 15, 10, 0))
         try fixture.existingInspection(at: sydney(2026, 1, 12, 10, 0))
         try fixture.existingInspection(at: sydney(2026, 4, 13, 10, 0))
@@ -98,7 +98,7 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
     }
 
     func test_scheduling_withTenantConsent_allowsShortNotice_butStillEnforcesAnnualLimit() throws {
-        // Tomorrow at 8:30 pm: short notice and outside hours, but the tenant agreed in writing.
+        // tomorrow at 8:30pm - not enough notice and too late, but the tenant has agreed so it's fine
         let agreed = try fixture.book(sydney(2026, 10, 8, 20, 30), tenantConsent: true)
         XCTAssertTrue(agreed.tenantConsentRecorded)
 

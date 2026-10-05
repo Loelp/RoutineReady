@@ -1,7 +1,7 @@
 import PhotosUI
 import SwiftUI
 
-/// The walk-through: log maintenance items room by room, then write the condition summary and complete.
+// The screen used while walking through the property: log items, then write the summary and complete
 struct InspectionInProgressView: View {
     @State private var viewModel: InspectionInProgressViewModel
     @State private var photoItem: PhotosPickerItem?

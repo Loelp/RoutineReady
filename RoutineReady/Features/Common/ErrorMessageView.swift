@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shows a use case error inline, with its recovery suggestion underneath.
+// red error message with the suggestion underneath
 struct ErrorMessageView: View {
     let message: ErrorMessage
 

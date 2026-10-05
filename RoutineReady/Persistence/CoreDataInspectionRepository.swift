@@ -20,7 +20,7 @@ class CoreDataInspectionRepository: InspectionRepository {
         return try context.fetch(request).map { $0.toDomain() }
     }
 
-    /// Today's run sheet.
+    // used for today's run sheet
     func scheduledInspections(from start: Date, before end: Date) throws -> [RoutineInspection] {
         let request = RoutineInspectionEntity.fetchRequest()
         request.predicate = NSPredicate(
@@ -31,7 +31,7 @@ class CoreDataInspectionRepository: InspectionRepository {
         return try context.fetch(request).map { $0.toDomain() }
     }
 
-    /// The NSW annual limit check. Counted fresh every time; no counter is stored.
+    // used for the 4 per year check (no counter is stored, it's counted each time)
     func inspectionsCountingTowardAnnualLimit(propertyID: UUID, from start: Date, through end: Date) throws -> [RoutineInspection] {
         let request = RoutineInspectionEntity.fetchRequest()
         request.predicate = NSPredicate(
@@ -43,6 +43,7 @@ class CoreDataInspectionRepository: InspectionRepository {
     }
 
     func save(_ inspection: RoutineInspection) throws {
+        // update the existing one if there is one, otherwise make a new one
         var entity = try findInspectionEntity(id: inspection.id)
         if entity == nil {
             guard let property = try findPropertyEntity(id: inspection.propertyID) else {
@@ -68,7 +69,7 @@ class CoreDataInspectionRepository: InspectionRepository {
         return try context.fetch(request).map { $0.toDomain() }
     }
 
-    /// The urgent backlog shown on the widget.
+    // the urgent count shown on the widget
     func urgentUnresolvedMaintenanceItems() throws -> [MaintenanceItem] {
         let request = MaintenanceItemEntity.fetchRequest()
         request.predicate = NSPredicate(format: "severity == %@ AND isResolved == NO", MaintenanceSeverity.urgent.rawValue)

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// One property: who lives there, who owns it, and its routine inspection history.
+// Tenant, landlord, the 4-per-year counter and the inspection history for one property
 struct PropertyDetailView: View {
     let dependencies: AppDependencies
     @State private var viewModel: PropertyDetailViewModel

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Home tab: today's routine inspections in the order the property manager will visit them.
+// Home tab - today's inspections in time order
 struct RunSheetView: View {
     let dependencies: AppDependencies
     @State private var viewModel: RunSheetViewModel

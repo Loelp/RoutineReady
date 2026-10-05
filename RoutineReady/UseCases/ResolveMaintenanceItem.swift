@@ -1,6 +1,6 @@
 import Foundation
 
-/// Marks a maintenance item as fixed, removing it from the urgent backlog shown on the widget.
+/// Marks a maintenance item as fixed. This takes it off the urgent count on the widget.
 struct ResolveMaintenanceItem {
     let inspections: InspectionRepository
     let widgetSnapshot: WidgetSnapshotWriting
@@ -18,6 +18,11 @@ struct ResolveMaintenanceItem {
 enum MaintenanceResolutionError: LocalizedError, Equatable {
     case maintenanceItemNotFound
 
-    var errorDescription: String? { "This maintenance item no longer exists." }
-    var recoverySuggestion: String? { "Reopen the inspection to see its current maintenance items." }
+    var errorDescription: String? {
+        return "This maintenance item couldn't be found."
+    }
+
+    var recoverySuggestion: String? {
+        return "Go back and open the inspection again."
+    }
 }

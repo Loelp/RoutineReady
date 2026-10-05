@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The property manager's day: today's stops, the whole portfolio, and photos waiting to be filed.
+// the three tabs
 struct RootTabView: View {
     let dependencies: AppDependencies
 
