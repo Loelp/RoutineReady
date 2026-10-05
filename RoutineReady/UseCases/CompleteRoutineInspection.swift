@@ -1,7 +1,7 @@
 import Foundation
 
-/// Marks a routine inspection as done. Only a scheduled inspection that is due (today or earlier) can be completed,
-/// and it needs a condition summary because the landlord's inspection report is built from it.
+/// Marks an inspection as done. It has to still be scheduled, it has to be the day of the
+/// inspection or later, and it needs a condition summary because that goes in the landlord's report.
 struct CompleteRoutineInspection {
     let inspections: InspectionRepository
     let clock: DateProviding
@@ -13,16 +13,22 @@ struct CompleteRoutineInspection {
         guard var inspection = try inspections.inspection(withID: inspectionID) else {
             throw InspectionCompletionError.inspectionNotFound
         }
-        switch inspection.status {
-        case .cancelled: throw InspectionCompletionError.inspectionCancelled
-        case .completed: throw InspectionCompletionError.alreadyCompleted
-        case .scheduled: break
+
+        if inspection.status == .cancelled {
+            throw InspectionCompletionError.inspectionCancelled
         }
-        guard calendar.startOfDay(for: inspection.scheduledAt) <= calendar.startOfDay(for: clock.now) else {
+        if inspection.status == .completed {
+            throw InspectionCompletionError.alreadyCompleted
+        }
+
+        let inspectionDay = calendar.startOfDay(for: inspection.scheduledAt)
+        let today = calendar.startOfDay(for: clock.now)
+        if inspectionDay > today {
             throw InspectionCompletionError.notYetDue
         }
+
         let summary = conditionSummary.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !summary.isEmpty else {
+        if summary.isEmpty {
             throw InspectionCompletionError.missingConditionSummary
         }
 
@@ -44,21 +50,31 @@ enum InspectionCompletionError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .notYetDue: "This inspection is booked for a later day, so it can't be completed yet."
-        case .alreadyCompleted: "This inspection has already been completed."
-        case .inspectionCancelled: "This inspection was cancelled, so it can't be completed."
-        case .missingConditionSummary: "Add a short condition summary before completing — the landlord's report needs it."
-        case .inspectionNotFound: "This inspection is no longer in your diary."
+        case .notYetDue:
+            return "This inspection is booked for a later day, so it can't be completed yet."
+        case .alreadyCompleted:
+            return "This inspection has already been completed."
+        case .inspectionCancelled:
+            return "This inspection was cancelled, so it can't be completed."
+        case .missingConditionSummary:
+            return "Add a short condition summary before completing — the landlord's report needs it."
+        case .inspectionNotFound:
+            return "This inspection couldn't be found."
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
-        case .notYetDue: "Complete it on the day of the inspection."
-        case .alreadyCompleted: "Open the property to see the completed report."
-        case .inspectionCancelled: "Book a new routine inspection from the property's page."
-        case .missingConditionSummary: "Describe the overall condition in a sentence or two, e.g. \"Clean and well kept; minor wear to carpets.\""
-        case .inspectionNotFound: "Go back to today's run sheet and choose the inspection again."
+        case .notYetDue:
+            return "Complete it on the day of the inspection."
+        case .alreadyCompleted:
+            return "You can see the report on the property's page."
+        case .inspectionCancelled:
+            return "Book a new routine inspection from the property's page."
+        case .missingConditionSummary:
+            return "A sentence or two is fine, e.g. \"Clean and tidy, some wear on the carpets.\""
+        case .inspectionNotFound:
+            return "Go back to today's run sheet and open it again."
         }
     }
 }

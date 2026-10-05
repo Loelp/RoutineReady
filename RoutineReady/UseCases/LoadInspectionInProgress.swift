@@ -6,27 +6,32 @@ struct InspectionInProgress: Equatable {
     let maintenanceItems: [MaintenanceItem]
 }
 
-/// The inspection being walked through, with its property and the maintenance items logged so far.
+/// Loads an inspection with its property and the maintenance items logged so far.
 struct LoadInspectionInProgress {
     let properties: PropertyRepository
     let inspections: InspectionRepository
 
     func execute(inspectionID: UUID) throws -> InspectionInProgress {
-        guard let inspection = try inspections.inspection(withID: inspectionID),
-              let property = try properties.property(withID: inspection.propertyID) else {
+        guard let inspection = try inspections.inspection(withID: inspectionID) else {
             throw InspectionLookupError.inspectionNotFound
         }
-        return InspectionInProgress(
-            inspection: inspection,
-            property: property,
-            maintenanceItems: try inspections.maintenanceItems(forInspectionID: inspectionID)
-        )
+        guard let property = try properties.property(withID: inspection.propertyID) else {
+            throw InspectionLookupError.inspectionNotFound
+        }
+
+        let items = try inspections.maintenanceItems(forInspectionID: inspectionID)
+        return InspectionInProgress(inspection: inspection, property: property, maintenanceItems: items)
     }
 }
 
 enum InspectionLookupError: LocalizedError, Equatable {
     case inspectionNotFound
 
-    var errorDescription: String? { "This inspection is no longer in your diary." }
-    var recoverySuggestion: String? { "Go back to today's run sheet and choose the inspection again." }
+    var errorDescription: String? {
+        return "This inspection couldn't be found."
+    }
+
+    var recoverySuggestion: String? {
+        return "Go back to today's run sheet and open it again."
+    }
 }

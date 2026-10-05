@@ -1,9 +1,11 @@
 import Foundation
 
-/// Files photos shared from the Photos app (through the share extension) as maintenance items.
-/// Each inbox record becomes one routine-severity item on the inspection the user picked, and is then removed.
-/// A record whose inspection has since been cancelled or deleted stays in the inbox so the user can reassign it.
+/// Turns photos shared from the Photos app (through the share extension) into maintenance items.
+/// Each photo becomes one routine item on the inspection that was picked, and its inbox record is deleted.
+/// If that inspection has been cancelled (or deleted) since, the photo stays in the inbox
+/// so the user can move it to another inspection.
 struct ImportSharedPhotos {
+    // used when the photo was shared without a note
     static let defaultDescription = "Defect photo shared from Photos"
 
     let inbox: SharedPhotoInbox
@@ -12,18 +14,25 @@ struct ImportSharedPhotos {
     @discardableResult
     func execute() throws -> SharedPhotoImportResult {
         var result = SharedPhotoImportResult()
+
         for record in try inbox.pendingRecords() {
+            var description = record.note
+            if description.isEmpty {
+                description = ImportSharedPhotos.defaultDescription
+            }
+
             do {
                 try logMaintenanceItem.execute(
                     inspectionID: record.inspectionID,
                     room: record.room,
-                    description: record.note.isEmpty ? Self.defaultDescription : record.note,
+                    description: description,
                     severity: .routine,
                     photoFilename: record.photoFilename
                 )
                 try inbox.remove(record)
                 result.importedCount += 1
             } catch MaintenanceLoggingError.inspectionCancelled, MaintenanceLoggingError.inspectionNotFound {
+                // leave it in the inbox for the user to sort out
                 result.unfiled.append(UnfiledSharedPhoto(record: record, reason: .inspectionNoLongerAvailable))
             }
         }
@@ -36,22 +45,24 @@ struct SharedPhotoImportResult: Equatable {
     var unfiled: [UnfiledSharedPhoto] = []
 }
 
-/// A shared photo that stays in the inbox until the user picks another inspection for it.
+// A shared photo that couldn't be filed and is waiting in the inbox
 struct UnfiledSharedPhoto: Identifiable, Equatable {
     let record: SharedInboxRecord
     let reason: SharedPhotoImportError
 
-    var id: UUID { record.id }
+    var id: UUID {
+        return record.id
+    }
 }
 
 enum SharedPhotoImportError: LocalizedError, Equatable {
     case inspectionNoLongerAvailable
 
     var errorDescription: String? {
-        "These photos were shared to an inspection that has since been cancelled."
+        return "These photos were shared to an inspection that has since been cancelled."
     }
 
     var recoverySuggestion: String? {
-        "Choose another inspection."
+        return "Choose another inspection."
     }
 }

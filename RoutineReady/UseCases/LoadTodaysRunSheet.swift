@@ -1,15 +1,18 @@
 import Foundation
 
-/// One stop on the property manager's day: a scheduled inspection and the property it is at.
+// One stop on the run sheet - the inspection plus the property it's at
 struct RunSheetStop: Identifiable, Equatable {
     let inspection: RoutineInspection
     let property: Property
 
-    var id: UUID { inspection.id }
+    var id: UUID {
+        return inspection.id
+    }
 }
 
-/// Today's scheduled routine inspections (Sydney time), in the order the property manager will drive to them.
-/// Read-only: the only failures are storage errors, so it has no business error enum.
+/// Today's scheduled inspections (Sydney time) in time order, so the property manager
+/// can drive to them one after another.
+/// This only reads data, so there's no error enum - the only thing that can go wrong is the database.
 struct LoadTodaysRunSheet {
     let properties: PropertyRepository
     let inspections: InspectionRepository
@@ -19,8 +22,14 @@ struct LoadTodaysRunSheet {
     func execute() throws -> [RunSheetStop] {
         let startOfToday = calendar.startOfDay(for: clock.now)
         let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
-        return try inspections.scheduledInspections(from: startOfToday, before: startOfTomorrow).compactMap { inspection in
-            try properties.property(withID: inspection.propertyID).map { RunSheetStop(inspection: inspection, property: $0) }
+        let todaysInspections = try inspections.scheduledInspections(from: startOfToday, before: startOfTomorrow)
+
+        var stops: [RunSheetStop] = []
+        for inspection in todaysInspections {
+            if let property = try properties.property(withID: inspection.propertyID) {
+                stops.append(RunSheetStop(inspection: inspection, property: property))
+            }
         }
+        return stops
     }
 }

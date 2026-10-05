@@ -1,7 +1,7 @@
 import Foundation
 
-/// Records a defect found during a routine inspection. Every item needs a description; an urgent item also
-/// needs its room, so the tradesperson sent out can find it without calling the tenant.
+/// Saves a maintenance item found during an inspection. It always needs a description,
+/// and urgent ones also need a room so the tradesperson knows where to go.
 struct LogMaintenanceItem {
     let inspections: InspectionRepository
     let clock: DateProviding
@@ -12,23 +12,25 @@ struct LogMaintenanceItem {
         guard let inspection = try inspections.inspection(withID: inspectionID) else {
             throw MaintenanceLoggingError.inspectionNotFound
         }
-        guard inspection.status != .cancelled else {
+        if inspection.status == .cancelled {
             throw MaintenanceLoggingError.inspectionCancelled
         }
-        let description = description.trimmingCharacters(in: .whitespacesAndNewlines)
-        let room = room.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !description.isEmpty else {
+
+        let cleanDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanRoom = room.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if cleanDescription.isEmpty {
             throw MaintenanceLoggingError.missingDescription
         }
-        guard severity != .urgent || !room.isEmpty else {
+        if severity == .urgent && cleanRoom.isEmpty {
             throw MaintenanceLoggingError.urgentItemNeedsRoom
         }
 
         let item = MaintenanceItem(
             id: UUID(),
             inspectionID: inspectionID,
-            room: room,
-            itemDescription: description,
+            room: cleanRoom,
+            itemDescription: cleanDescription,
             severity: severity,
             isResolved: false,
             photoFilename: photoFilename,
@@ -48,19 +50,27 @@ enum MaintenanceLoggingError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .missingDescription: "Describe the maintenance item before saving it."
-        case .inspectionCancelled: "This inspection was cancelled, so items can't be logged against it."
-        case .urgentItemNeedsRoom: "Say which room this is in so the tradesperson can find it."
-        case .inspectionNotFound: "This inspection is no longer in your diary."
+        case .missingDescription:
+            return "Describe the maintenance item before saving it."
+        case .inspectionCancelled:
+            return "This inspection was cancelled, so you can't add items to it."
+        case .urgentItemNeedsRoom:
+            return "Say which room this is in so the tradesperson can find it."
+        case .inspectionNotFound:
+            return "This inspection couldn't be found."
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
-        case .missingDescription: "A few words is enough, e.g. \"Leaking tap under kitchen sink\"."
-        case .inspectionCancelled: "Log it against the property's next routine inspection instead."
-        case .urgentItemNeedsRoom: "Enter the room, e.g. \"Bathroom\" or \"Kitchen\"."
-        case .inspectionNotFound: "Go back to today's run sheet and choose the inspection again."
+        case .missingDescription:
+            return "A few words is enough, e.g. \"Leaking tap under kitchen sink\"."
+        case .inspectionCancelled:
+            return "Add it to the property's next inspection instead."
+        case .urgentItemNeedsRoom:
+            return "Type the room, e.g. \"Bathroom\" or \"Kitchen\"."
+        case .inspectionNotFound:
+            return "Go back to today's run sheet and open it again."
         }
     }
 }

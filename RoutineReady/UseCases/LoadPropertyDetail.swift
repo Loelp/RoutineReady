@@ -2,14 +2,13 @@ import Foundation
 
 struct PropertyDetail: Equatable {
     let property: Property
-    /// Newest first.
-    let inspectionHistory: [RoutineInspection]
-    /// Non-cancelled inspections in the 12 months up to now, against `RoutineInspectionRules.annualLimit`.
-    let inspectionsUsedInLast12Months: Int
+    let inspectionHistory: [RoutineInspection]   // newest first
+    let inspectionsUsedInLast12Months: Int       // out of RoutineInspectionRules.annualLimit
 }
 
-/// A property with its inspection history and how much of the annual routine inspection allowance is used.
-/// The allowance is queried with the same annual limit query that `ScheduleRoutineInspection` enforces.
+/// A property with its inspection history, and how many of its 4 inspections it has used
+/// in the last 12 months. Uses the same annual limit query as ScheduleRoutineInspection
+/// so the number on screen always matches what booking will allow.
 struct LoadPropertyDetail {
     let properties: PropertyRepository
     let inspections: InspectionRepository
@@ -20,12 +19,11 @@ struct LoadPropertyDetail {
         guard let property = try properties.property(withID: propertyID) else {
             throw PropertyDetailError.propertyNotFound
         }
+
         let now = clock.now
-        let used = try inspections.inspectionsCountingTowardAnnualLimit(
-            propertyID: propertyID,
-            from: RoutineInspectionRules.annualWindowStart(endingAt: now, calendar: calendar),
-            through: now
-        )
+        let windowStart = RoutineInspectionRules.annualWindowStart(endingAt: now, calendar: calendar)
+        let used = try inspections.inspectionsCountingTowardAnnualLimit(propertyID: propertyID, from: windowStart, through: now)
+
         return PropertyDetail(
             property: property,
             inspectionHistory: try inspections.inspections(forPropertyID: propertyID),
@@ -37,6 +35,11 @@ struct LoadPropertyDetail {
 enum PropertyDetailError: LocalizedError, Equatable {
     case propertyNotFound
 
-    var errorDescription: String? { "This property is no longer in your portfolio." }
-    var recoverySuggestion: String? { "Go back to the portfolio and choose another property." }
+    var errorDescription: String? {
+        return "This property isn't in your portfolio any more."
+    }
+
+    var recoverySuggestion: String? {
+        return "Go back to the portfolio and pick another property."
+    }
 }

@@ -1,16 +1,17 @@
 import Foundation
 
-/// Points an unfiled shared photo at a different inspection and tries to file it again.
-/// Reports failures with `SharedPhotoImportError`, because it is the same import operation re-attempted.
+/// Moves a photo that couldn't be filed onto a different inspection, then tries the import again.
+/// It doesn't have its own error enum - it's really just the import being run again,
+/// so it uses SharedPhotoImportError.
 struct ReassignSharedPhoto {
     let inbox: SharedPhotoInbox
     let importSharedPhotos: ImportSharedPhotos
 
     @discardableResult
     func execute(record: SharedInboxRecord, toInspectionID inspectionID: UUID) throws -> SharedPhotoImportResult {
-        var reassigned = record
-        reassigned.inspectionID = inspectionID
-        try inbox.save(reassigned)
+        var updatedRecord = record
+        updatedRecord.inspectionID = inspectionID
+        try inbox.save(updatedRecord)
         return try importSharedPhotos.execute()
     }
 }

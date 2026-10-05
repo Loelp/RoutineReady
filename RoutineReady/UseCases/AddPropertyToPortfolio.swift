@@ -1,7 +1,7 @@
 import Foundation
 
-/// Adds a rental property to the portfolio. Address, suburb, tenant and landlord are all required,
-/// because notices and landlord reports are addressed using them.
+/// Adds a new property. Every field is needed because notices go to the tenant at that address
+/// and reports go to the landlord.
 struct AddPropertyToPortfolio {
     let properties: PropertyRepository
 
@@ -15,10 +15,20 @@ struct AddPropertyToPortfolio {
             landlordName: landlordName.trimmingCharacters(in: .whitespaces),
             tenancyStartDate: tenancyStartDate
         )
-        if property.address.isEmpty { throw PropertyEntryError.missingAddress }
-        if property.suburb.isEmpty { throw PropertyEntryError.missingSuburb }
-        if property.tenantName.isEmpty { throw PropertyEntryError.missingTenantName }
-        if property.landlordName.isEmpty { throw PropertyEntryError.missingLandlordName }
+
+        if property.address.isEmpty {
+            throw PropertyEntryError.missingAddress
+        }
+        if property.suburb.isEmpty {
+            throw PropertyEntryError.missingSuburb
+        }
+        if property.tenantName.isEmpty {
+            throw PropertyEntryError.missingTenantName
+        }
+        if property.landlordName.isEmpty {
+            throw PropertyEntryError.missingLandlordName
+        }
+
         try properties.add(property)
         return property
     }
@@ -32,18 +42,25 @@ enum PropertyEntryError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .missingAddress: "Enter the property's street address."
-        case .missingSuburb: "Enter the property's suburb."
-        case .missingTenantName: "Enter the tenant's name."
-        case .missingLandlordName: "Enter the landlord's name."
+        case .missingAddress:
+            return "Enter the street address."
+        case .missingSuburb:
+            return "Enter the suburb."
+        case .missingTenantName:
+            return "Enter the tenant's name."
+        case .missingLandlordName:
+            return "Enter the landlord's name."
         }
     }
 
     var recoverySuggestion: String? {
         switch self {
-        case .missingAddress, .missingSuburb: "Notices of entry must show the full address."
-        case .missingTenantName: "Notices of entry are addressed to the tenant."
-        case .missingLandlordName: "Condition reports are sent to the landlord."
+        case .missingAddress, .missingSuburb:
+            return "Notices of entry need the full address."
+        case .missingTenantName:
+            return "Notices of entry are addressed to the tenant."
+        case .missingLandlordName:
+            return "Condition reports get sent to the landlord."
         }
     }
 }
