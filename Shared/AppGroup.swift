@@ -1,14 +1,15 @@
 import Foundation
 
-/// The App Group shared by the app, the widget and the share extension.
-/// Only small JSON files and photos cross this boundary; the Core Data store stays in the app's own container.
+// Shared folder between the app, the widget and the share extension.
+// Only JSON files and photos go in here - the Core Data database stays in the app's own container.
 nonisolated enum AppGroup {
     static let identifier = "group.com.lucas.routineready"
 
     static var containerURL: URL {
         guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: identifier) else {
             #if DEBUG
-            fatalError("App Group \(identifier) is missing from this target's entitlements (Signing & Capabilities).")
+            // if this crashes, the App Group probably isn't ticked in Signing & Capabilities for this target
+            fatalError("App Group \(identifier) is not set up for this target")
             #else
             return FileManager.default.temporaryDirectory
             #endif
@@ -16,26 +17,34 @@ nonisolated enum AppGroup {
         return url
     }
 
-    /// Read by the widget; written by the app after every change.
-    static var widgetSnapshotURL: URL { containerURL.appending(path: "widget-snapshot.json") }
+    // the app writes this and the widget reads it
+    static var widgetSnapshotURL: URL {
+        return containerURL.appending(path: "widget-snapshot.json")
+    }
 
-    /// Inspections the share extension offers in its picker; written by the app.
-    static var shareInspectionsURL: URL { containerURL.appending(path: "share-inspections.json") }
+    // the app writes this and the share extension reads it (the list of inspections you can pick)
+    static var shareInspectionsURL: URL {
+        return containerURL.appending(path: "share-inspections.json")
+    }
 
-    /// Defect photos, referenced from Core Data by file name only.
-    static var photosDirectory: URL { directory(named: "Photos") }
+    // defect photos (Core Data only keeps the file name)
+    static var photosDirectory: URL {
+        return makeFolder(named: "Photos")
+    }
 
-    /// `SharedInboxRecord` JSON files waiting for the app to file them.
-    static var inboxDirectory: URL { directory(named: "Inbox") }
+    // the share extension saves a SharedInboxRecord file here for each photo
+    static var inboxDirectory: URL {
+        return makeFolder(named: "Inbox")
+    }
 
-    private static func directory(named name: String) -> URL {
+    private static func makeFolder(named name: String) -> URL {
         let url = containerURL.appending(path: name, directoryHint: .isDirectory)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
 }
 
-/// One JSON format for every file in the App Group, so all three targets agree on dates.
+// All three targets read and write the same files, so the JSON date format is set in one place.
 nonisolated enum AppGroupJSON {
     static func encode<T: Encodable>(_ value: T) throws -> Data {
         let encoder = JSONEncoder()

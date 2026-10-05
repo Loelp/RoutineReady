@@ -1,10 +1,10 @@
 import Foundation
 
-/// Photos received from the share extension and not yet filed as maintenance items.
+// Photos sent over from the share extension that haven't been filed yet
 protocol SharedPhotoInbox {
     func pendingRecords() throws -> [SharedInboxRecord]
-    /// Inserts or updates, e.g. after the user reassigns a photo to another inspection.
+    // used when the user moves a photo to a different inspection
     func save(_ record: SharedInboxRecord) throws
-    /// Removes the record only; its photo now belongs to a maintenance item.
+    // only deletes the record - the photo file is kept because the maintenance item uses it now
     func remove(_ record: SharedInboxRecord) throws
 }

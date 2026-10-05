@@ -1,7 +1,7 @@
 import Foundation
 
-/// Test and SwiftUI preview stand-in for `SharedInboxReader`.
-final class InMemorySharedPhotoInbox: SharedPhotoInbox {
+// Fake inbox for the unit tests and SwiftUI previews
+class InMemorySharedPhotoInbox: SharedPhotoInbox {
     private(set) var records: [SharedInboxRecord]
 
     init(_ records: [SharedInboxRecord] = []) {
@@ -9,7 +9,7 @@ final class InMemorySharedPhotoInbox: SharedPhotoInbox {
     }
 
     func pendingRecords() throws -> [SharedInboxRecord] {
-        records.sorted { $0.sharedAt < $1.sharedAt }
+        return records.sorted { $0.sharedAt < $1.sharedAt }
     }
 
     func save(_ record: SharedInboxRecord) throws {

@@ -1,16 +1,14 @@
 import Foundation
 
-/// The NSW limits on routine inspections (Residential Tenancies Act 2010 s 55; NSW Fair Trading).
+// The NSW limits on routine inspections.
+// Source: Residential Tenancies Act 2010 (NSW) s 55 and NSW Fair Trading.
 enum RoutineInspectionRules {
-    /// Calendar days of written notice the tenant must receive.
     static let minimumNoticeDays = 7
-    /// Non-cancelled routine inspections allowed in any rolling 12 months.
-    static let annualLimit = 4
-    /// An inspection may start from 08:00 up to 19:59.
-    static let permittedStartHours = 8..<20
+    static let annualLimit = 4                 // max inspections in any 12 months
+    static let permittedStartHours = 8..<20    // 8:00 am up to 7:59 pm
 
-    /// Start of the rolling 12-month window that ends at `date` (inclusive at both ends).
+    // the date 12 months before the given date (start of the rolling window)
     static func annualWindowStart(endingAt date: Date, calendar: Calendar = .sydney) -> Date {
-        calendar.date(byAdding: .year, value: -1, to: date)!
+        return calendar.date(byAdding: .year, value: -1, to: date)!
     }
 }

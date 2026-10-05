@@ -1,7 +1,7 @@
 import Foundation
 
-/// Test and SwiftUI preview stand-in for `CoreDataPropertyRepository`.
-final class InMemoryPropertyRepository: PropertyRepository {
+// Fake repository that keeps everything in an array. Used by the unit tests and SwiftUI previews.
+class InMemoryPropertyRepository: PropertyRepository {
     private(set) var stored: [Property]
 
     init(_ properties: [Property] = []) {
@@ -9,17 +9,23 @@ final class InMemoryPropertyRepository: PropertyRepository {
     }
 
     func allProperties() throws -> [Property] {
-        stored.sorted { ($0.suburb, $0.address) < ($1.suburb, $1.address) }
+        // same order as the Core Data version: suburb, then address
+        return stored.sorted { first, second in
+            if first.suburb != second.suburb {
+                return first.suburb < second.suburb
+            }
+            return first.address < second.address
+        }
     }
 
     func properties(matching text: String) throws -> [Property] {
-        try allProperties().filter {
-            $0.address.localizedStandardContains(text) || $0.suburb.localizedStandardContains(text)
+        return try allProperties().filter { property in
+            property.address.localizedStandardContains(text) || property.suburb.localizedStandardContains(text)
         }
     }
 
     func property(withID id: UUID) throws -> Property? {
-        stored.first { $0.id == id }
+        return stored.first { $0.id == id }
     }
 
     func add(_ property: Property) throws {

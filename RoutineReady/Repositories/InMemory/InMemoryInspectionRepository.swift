@@ -1,8 +1,8 @@
 import Foundation
 
-/// Test and SwiftUI preview stand-in for `CoreDataInspectionRepository`.
-/// Each query mirrors the Core Data predicate documented on `InspectionRepository`.
-final class InMemoryInspectionRepository: InspectionRepository {
+// Fake repository for the unit tests and SwiftUI previews.
+// Each filter here matches the predicate in CoreDataInspectionRepository.
+class InMemoryInspectionRepository: InspectionRepository {
     private(set) var inspections: [RoutineInspection]
     private(set) var maintenanceItems: [MaintenanceItem]
 
@@ -12,23 +12,29 @@ final class InMemoryInspectionRepository: InspectionRepository {
     }
 
     func inspection(withID id: UUID) throws -> RoutineInspection? {
-        inspections.first { $0.id == id }
+        return inspections.first { $0.id == id }
     }
 
     func inspections(forPropertyID id: UUID) throws -> [RoutineInspection] {
-        inspections.filter { $0.propertyID == id }.sorted { $0.scheduledAt > $1.scheduledAt }
+        let forProperty = inspections.filter { $0.propertyID == id }
+        return forProperty.sorted { $0.scheduledAt > $1.scheduledAt }
     }
 
     func scheduledInspections(from start: Date, before end: Date) throws -> [RoutineInspection] {
-        inspections
-            .filter { $0.status == .scheduled && $0.scheduledAt >= start && $0.scheduledAt < end }
-            .sorted { $0.scheduledAt < $1.scheduledAt }
+        let matching = inspections.filter { inspection in
+            inspection.status == .scheduled && inspection.scheduledAt >= start && inspection.scheduledAt < end
+        }
+        return matching.sorted { $0.scheduledAt < $1.scheduledAt }
     }
 
     func inspectionsCountingTowardAnnualLimit(propertyID: UUID, from start: Date, through end: Date) throws -> [RoutineInspection] {
-        inspections
-            .filter { $0.propertyID == propertyID && $0.status != .cancelled && $0.scheduledAt >= start && $0.scheduledAt <= end }
-            .sorted { $0.scheduledAt < $1.scheduledAt }
+        let matching = inspections.filter { inspection in
+            inspection.propertyID == propertyID
+                && inspection.status != .cancelled
+                && inspection.scheduledAt >= start
+                && inspection.scheduledAt <= end
+        }
+        return matching.sorted { $0.scheduledAt < $1.scheduledAt }
     }
 
     func save(_ inspection: RoutineInspection) throws {
@@ -37,15 +43,16 @@ final class InMemoryInspectionRepository: InspectionRepository {
     }
 
     func maintenanceItem(withID id: UUID) throws -> MaintenanceItem? {
-        maintenanceItems.first { $0.id == id }
+        return maintenanceItems.first { $0.id == id }
     }
 
     func maintenanceItems(forInspectionID id: UUID) throws -> [MaintenanceItem] {
-        maintenanceItems.filter { $0.inspectionID == id }.sorted { $0.loggedAt < $1.loggedAt }
+        let forInspection = maintenanceItems.filter { $0.inspectionID == id }
+        return forInspection.sorted { $0.loggedAt < $1.loggedAt }
     }
 
     func urgentUnresolvedMaintenanceItems() throws -> [MaintenanceItem] {
-        maintenanceItems.filter { $0.severity == .urgent && !$0.isResolved }
+        return maintenanceItems.filter { $0.severity == .urgent && !$0.isResolved }
     }
 
     func save(_ item: MaintenanceItem) throws {

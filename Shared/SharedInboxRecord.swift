@@ -1,18 +1,17 @@
 import Foundation
 
-/// One photo shared from the Photos app, waiting in the App Group `Inbox/` for the app to file it
-/// as a maintenance item. Written by the share extension, read and deleted by the app.
+// One photo shared from the Photos app, waiting in the Inbox folder.
+// The share extension writes these, and the app turns them into maintenance items.
 nonisolated struct SharedInboxRecord: Codable, Identifiable, Equatable {
     let id: UUID
     var inspectionID: UUID
     let room: String
     let note: String
-    /// File name inside the App Group `Photos/` folder.
-    let photoFilename: String
+    let photoFilename: String   // file name in the Photos folder
     let sharedAt: Date
 }
 
-/// An inspection the share extension can file photos against, listed in `share-inspections.json`.
+// An inspection you can pick in the share extension (saved in share-inspections.json)
 nonisolated struct ShareableInspection: Codable, Identifiable, Equatable {
     let id: UUID
     let address: String
