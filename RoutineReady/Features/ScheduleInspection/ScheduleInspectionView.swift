@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Books a routine inspection. Any NSW rule it breaks is explained inline, with what to do instead.
+// Booking form. If a rule is broken the error shows at the bottom of the form.
 struct ScheduleInspectionView: View {
     @State var viewModel: ScheduleInspectionViewModel
     @Environment(\.dismiss) private var dismiss
@@ -25,7 +25,7 @@ struct ScheduleInspectionView: View {
                     }
                 }
             }
-            // The rules are judged in Sydney time, so the pickers show Sydney time too.
+            // the rules use Sydney time so the pickers should too
             .environment(\.timeZone, Calendar.sydney.timeZone)
             .navigationTitle("Book Inspection")
             .navigationBarTitleDisplayMode(.inline)

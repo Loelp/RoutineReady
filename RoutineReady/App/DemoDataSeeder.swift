@@ -1,8 +1,8 @@
 import Foundation
 
-/// Fills an empty portfolio with realistic demo data on first launch, so every screen and the widget
-/// have something to show. It writes straight to the repositories: the history is made up to fit the
-/// NSW rules, so it doesn't go through `ScheduleRoutineInspection` (which would reject past dates).
+// Adds some demo properties and inspections the first time the app runs, so the screens and the
+// widget aren't empty. It saves straight to the repositories instead of going through
+// ScheduleRoutineInspection, because that would (correctly) refuse to book dates in the past.
 struct DemoDataSeeder {
     let properties: PropertyRepository
     let inspections: InspectionRepository
@@ -27,20 +27,20 @@ struct DemoDataSeeder {
         let cairdsAve = try addProperty("5/10 Cairds Ave", "Bankstown", tenant: "Daniel Lee", landlord: "Fatima Rahman")
         _ = try addProperty("77 Rookwood Rd", "Yagoona", tenant: "Sione Taufa", landlord: "Helen Kovac")
 
-        // Today's run sheet. If today is a Sunday or public holiday, these tenants agreed in writing.
+        // today's run sheet - if today is a Sunday or public holiday, mark them as tenant-agreed
         let todayIsRestricted = calendar.component(.weekday, from: clock.now) == 1
             || GazettedNSWPublicHolidays().holidayName(on: clock.now) != nil
         try addInspection(kitchenerPde, at: today(9, 0), consent: todayIsRestricted)
         try addInspection(roseSt, at: today(11, 15), consent: todayIsRestricted)
         try addInspection(wattleSt, at: today(14, 30), consent: todayIsRestricted)
         try addInspection(lyleSt, at: today(16, 45), consent: todayIsRestricted)
-        // Late in the day there would be nothing left for the widget, so add an after-work visit the tenant asked for.
+        // if it's already late, add one more (tenant asked for after work) so the widget has something to show
         let inAnHour = clock.now.addingTimeInterval(60 * 60)
         if inAnHour > today(16, 45) && calendar.isDate(inAnHour, inSameDayAs: clock.now) {
             try addInspection(cairdsAve, at: inAnHour, consent: true)
         }
 
-        // History: 14 Rose St has used 3 of its 4 inspections in the last 12 months, so a 5th booking is refused.
+        // past inspections. Rose St has 3 in the last 12 months + today's = 4, so booking another one gets refused
         let roseJanuary = try addInspection(roseSt, at: weekday(daysAgo: 270), status: .completed)
         try addInspection(roseSt, at: weekday(daysAgo: 180), status: .completed)
         let roseJuly = try addInspection(roseSt, at: weekday(daysAgo: 90), status: .completed)
@@ -87,7 +87,7 @@ struct DemoDataSeeder {
         return calendar.date(bySettingHour: hour, minute: minute, second: 0, of: clock.now)!
     }
 
-    /// 10:00 am about `daysAgo` days ago, moved to Monday if it lands on a Sunday.
+    // 10am on the day that many days ago (pushed to Monday if it's a Sunday)
     private func weekday(daysAgo: Int) -> Date {
         var date = calendar.date(byAdding: .day, value: -daysAgo, to: today(10, 0))!
         if calendar.component(.weekday, from: date) == 1 {

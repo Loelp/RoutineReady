@@ -1,6 +1,6 @@
 import Foundation
 
-/// A use case error ready to show on screen: what went wrong, and what to do next.
+// Turns an error into the two bits of text we show: what went wrong, and what to do about it
 struct ErrorMessage: Equatable {
     let title: String
     let suggestion: String?

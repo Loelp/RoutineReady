@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Every property the manager looks after, searchable by address or suburb.
+// All properties, with search by address or suburb
 struct PortfolioView: View {
     let dependencies: AppDependencies
     @State private var viewModel: PortfolioViewModel

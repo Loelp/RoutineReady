@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Photos shared from the Photos app that couldn't be filed, e.g. because their inspection was cancelled.
+// Shared photos that couldn't be filed (e.g. the inspection got cancelled) so they can be moved
 struct SharedPhotosInboxView: View {
     @State private var viewModel: SharedPhotosInboxViewModel
     @Environment(\.scenePhase) private var scenePhase

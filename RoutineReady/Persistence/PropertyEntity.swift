@@ -1,6 +1,6 @@
 import CoreData
 
-/// Core Data storage for a `Property`. Written by hand (codegen is Manual/None).
+// Core Data class for Property. Codegen is set to Manual/None in the model so this is written by hand.
 @objc(PropertyEntity)
 class PropertyEntity: NSManagedObject {
     @NSManaged var id: UUID
@@ -15,6 +15,7 @@ class PropertyEntity: NSManagedObject {
         return NSFetchRequest<PropertyEntity>(entityName: "PropertyEntity")
     }
 
+    // convert to the plain struct the rest of the app uses
     func toDomain() -> Property {
         return Property(
             id: id,

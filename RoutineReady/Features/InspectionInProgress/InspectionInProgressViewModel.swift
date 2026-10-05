@@ -7,14 +7,14 @@ class InspectionInProgressViewModel {
     var details: InspectionInProgress?
     var loadError: ErrorMessage?
 
-    // New maintenance item
+    // form fields for a new maintenance item
     var room = ""
     var itemDescription = ""
     var severity = MaintenanceSeverity.routine
     var photoData: Data?
     var itemError: ErrorMessage?
 
-    // Completing the inspection
+    // for completing the inspection
     var conditionSummary = ""
     var completionError: ErrorMessage?
 
@@ -49,7 +49,7 @@ class InspectionInProgressViewModel {
         }
     }
 
-    /// Returns true if the item was logged, so the view can clear the chosen photo.
+    // returns true if it worked so the view can clear the photo picker
     func logItem() -> Bool {
         do {
             var photoFilename: String? = nil

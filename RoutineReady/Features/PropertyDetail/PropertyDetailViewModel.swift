@@ -17,7 +17,7 @@ class PropertyDetailViewModel {
         self.cancelRoutineInspection = cancelRoutineInspection
     }
 
-    /// e.g. "2 of 4 routine inspections used in the last 12 months"
+    // e.g. "2 of 4 routine inspections used in the last 12 months"
     var allowanceText: String {
         let used = detail?.inspectionsUsedInLast12Months ?? 0
         return "\(used) of \(RoutineInspectionRules.annualLimit) routine inspections used in the last 12 months"

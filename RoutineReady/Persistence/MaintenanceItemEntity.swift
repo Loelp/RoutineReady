@@ -1,13 +1,12 @@
 import CoreData
 
-/// Core Data storage for a `MaintenanceItem`. Written by hand (codegen is Manual/None).
+// Core Data class for MaintenanceItem. Codegen is set to Manual/None in the model so this is written by hand.
 @objc(MaintenanceItemEntity)
 class MaintenanceItemEntity: NSManagedObject {
     @NSManaged var id: UUID
     @NSManaged var room: String
     @NSManaged var itemDescription: String
-    /// "urgent", "routine" or "cosmetic"
-    @NSManaged var severity: String
+    @NSManaged var severity: String   // "urgent", "routine" or "cosmetic"
     @NSManaged var isResolved: Bool
     @NSManaged var photoFilename: String?
     @NSManaged var loggedAt: Date
