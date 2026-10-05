@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		AD7D70043073CAC700440D71 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD7D70033073CAC700440D71 /* WidgetKit.framework */; };
 		AD7D70063073CAC700440D71 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD7D70053073CAC700440D71 /* SwiftUI.framework */; };
-		AD7D70153073CAC800440D71 /* RotuineReadyWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD7D70013073CAC700440D71 /* RotuineReadyWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AD7D70153073CAC800440D71 /* RoutineReadyWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD7D70013073CAC700440D71 /* RoutineReadyWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AD7D70293073CAD700440D71 /* RoutineReadyShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD7D701F3073CAD700440D71 /* RoutineReadyShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -33,7 +33,7 @@
 			containerPortal = AD7D6FCB3073CA0600440D71 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = AD7D70003073CAC700440D71;
-			remoteInfo = RotuineReadyWidgetExtension;
+			remoteInfo = RoutineReadyWidgetExtension;
 		};
 		AD7D70273073CAD700440D71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -51,7 +51,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				AD7D70153073CAC800440D71 /* RotuineReadyWidgetExtension.appex in Embed Foundation Extensions */,
+				AD7D70153073CAC800440D71 /* RoutineReadyWidgetExtension.appex in Embed Foundation Extensions */,
 				AD7D70293073CAD700440D71 /* RoutineReadyShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -63,20 +63,20 @@
 		AD7D6FD33073CA0600440D71 /* RoutineReady.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoutineReady.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD7D6FE03073CA0700440D71 /* RoutineReadyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoutineReadyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD7D6FEA3073CA0700440D71 /* RoutineReadyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoutineReadyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD7D70013073CAC700440D71 /* RotuineReadyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RotuineReadyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD7D70013073CAC700440D71 /* RoutineReadyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RoutineReadyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD7D70033073CAC700440D71 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		AD7D70053073CAC700440D71 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		AD7D701F3073CAD700440D71 /* RoutineReadyShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RoutineReadyShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD7D702F3073CB3900440D71 /* RotuineReadyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RotuineReadyWidgetExtension.entitlements; sourceTree = "<group>"; };
+		AD7D702F3073CB3900440D71 /* RoutineReadyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RoutineReadyWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AD7D70163073CAC800440D71 /* Exceptions for "RotuineReadyWidget" folder in "RotuineReadyWidgetExtension" target */ = {
+		AD7D70163073CAC800440D71 /* Exceptions for "RoutineReadyWidget" folder in "RoutineReadyWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = AD7D70003073CAC700440D71 /* RotuineReadyWidgetExtension */;
+			target = AD7D70003073CAC700440D71 /* RoutineReadyWidgetExtension */;
 		};
 		AD7D702A3073CAD700440D71 /* Exceptions for "RoutineReadyShare" folder in "RoutineReadyShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -103,12 +103,12 @@
 			path = RoutineReadyUITests;
 			sourceTree = "<group>";
 		};
-		AD7D70073073CAC700440D71 /* RotuineReadyWidget */ = {
+		AD7D70073073CAC700440D71 /* RoutineReadyWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				AD7D70163073CAC800440D71 /* Exceptions for "RotuineReadyWidget" folder in "RotuineReadyWidgetExtension" target */,
+				AD7D70163073CAC800440D71 /* Exceptions for "RoutineReadyWidget" folder in "RoutineReadyWidgetExtension" target */,
 			);
-			path = RotuineReadyWidget;
+			path = RoutineReadyWidget;
 			sourceTree = "<group>";
 		};
 		AD7D70203073CAD700440D71 /* RoutineReadyShare */ = {
@@ -165,11 +165,11 @@
 		AD7D6FCA3073CA0600440D71 = {
 			isa = PBXGroup;
 			children = (
-				AD7D702F3073CB3900440D71 /* RotuineReadyWidgetExtension.entitlements */,
+				AD7D702F3073CB3900440D71 /* RoutineReadyWidgetExtension.entitlements */,
 				AD7D6FD53073CA0600440D71 /* RoutineReady */,
 				AD7D6FE33073CA0700440D71 /* RoutineReadyTests */,
 				AD7D6FED3073CA0700440D71 /* RoutineReadyUITests */,
-				AD7D70073073CAC700440D71 /* RotuineReadyWidget */,
+				AD7D70073073CAC700440D71 /* RoutineReadyWidget */,
 				AD7D70203073CAD700440D71 /* RoutineReadyShare */,
 				AD7D70023073CAC700440D71 /* Frameworks */,
 				AD7D6FD43073CA0600440D71 /* Products */,
@@ -182,7 +182,7 @@
 				AD7D6FD33073CA0600440D71 /* RoutineReady.app */,
 				AD7D6FE03073CA0700440D71 /* RoutineReadyTests.xctest */,
 				AD7D6FEA3073CA0700440D71 /* RoutineReadyUITests.xctest */,
-				AD7D70013073CAC700440D71 /* RotuineReadyWidgetExtension.appex */,
+				AD7D70013073CAC700440D71 /* RoutineReadyWidgetExtension.appex */,
 				AD7D701F3073CAD700440D71 /* RoutineReadyShare.appex */,
 			);
 			name = Products;
@@ -271,9 +271,9 @@
 			productReference = AD7D6FEA3073CA0700440D71 /* RoutineReadyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		AD7D70003073CAC700440D71 /* RotuineReadyWidgetExtension */ = {
+		AD7D70003073CAC700440D71 /* RoutineReadyWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AD7D70173073CAC800440D71 /* Build configuration list for PBXNativeTarget "RotuineReadyWidgetExtension" */;
+			buildConfigurationList = AD7D70173073CAC800440D71 /* Build configuration list for PBXNativeTarget "RoutineReadyWidgetExtension" */;
 			buildPhases = (
 				AD7D6FFD3073CAC700440D71 /* Sources */,
 				AD7D6FFE3073CAC700440D71 /* Frameworks */,
@@ -284,13 +284,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				AD7D70073073CAC700440D71 /* RotuineReadyWidget */,
+				AD7D70073073CAC700440D71 /* RoutineReadyWidget */,
 			);
-			name = RotuineReadyWidgetExtension;
+			name = RoutineReadyWidgetExtension;
 			packageProductDependencies = (
 			);
-			productName = RotuineReadyWidgetExtension;
-			productReference = AD7D70013073CAC700440D71 /* RotuineReadyWidgetExtension.appex */;
+			productName = RoutineReadyWidgetExtension;
+			productReference = AD7D70013073CAC700440D71 /* RoutineReadyWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		AD7D701E3073CAD700440D71 /* RoutineReadyShare */ = {
@@ -361,7 +361,7 @@
 				AD7D6FD23073CA0600440D71 /* RoutineReady */,
 				AD7D6FDF3073CA0700440D71 /* RoutineReadyTests */,
 				AD7D6FE93073CA0700440D71 /* RoutineReadyUITests */,
-				AD7D70003073CAC700440D71 /* RotuineReadyWidgetExtension */,
+				AD7D70003073CAC700440D71 /* RoutineReadyWidgetExtension */,
 				AD7D701E3073CAD700440D71 /* RoutineReadyShare */,
 			);
 		};
@@ -456,7 +456,7 @@
 		};
 		AD7D70143073CAC800440D71 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = AD7D70003073CAC700440D71 /* RotuineReadyWidgetExtension */;
+			target = AD7D70003073CAC700440D71 /* RoutineReadyWidgetExtension */;
 			targetProxy = AD7D70133073CAC800440D71 /* PBXContainerItemProxy */;
 		};
 		AD7D70283073CAD700440D71 /* PBXTargetDependency */ = {
@@ -743,13 +743,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = RotuineReadyWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RoutineReadyWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z992574579;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RotuineReadyWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RotuineReadyWidget;
+				INFOPLIST_FILE = RoutineReadyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RoutineReadyWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -757,7 +757,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = lucastohmeh.RoutineReady.RotuineReadyWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = lucastohmeh.RoutineReady.RoutineReadyWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -774,13 +774,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = RotuineReadyWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RoutineReadyWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z992574579;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RotuineReadyWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RotuineReadyWidget;
+				INFOPLIST_FILE = RoutineReadyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RoutineReadyWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -788,7 +788,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = lucastohmeh.RoutineReady.RotuineReadyWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = lucastohmeh.RoutineReady.RoutineReadyWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -897,7 +897,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AD7D70173073CAC800440D71 /* Build configuration list for PBXNativeTarget "RotuineReadyWidgetExtension" */ = {
+		AD7D70173073CAC800440D71 /* Build configuration list for PBXNativeTarget "RoutineReadyWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AD7D70183073CAC800440D71 /* Debug */,

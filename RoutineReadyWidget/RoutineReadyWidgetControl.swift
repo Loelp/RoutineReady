@@ -1,6 +1,6 @@
 //
-//  RotuineReadyWidgetControl.swift
-//  RotuineReadyWidget
+//  RoutineReadyWidgetControl.swift
+//  RoutineReadyWidget
 //
 //  Created by Lucas Tohmeh on 5/10/2026.
 //
@@ -9,8 +9,8 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
-struct RotuineReadyWidgetControl: ControlWidget {
-    static let kind: String = "lucastohmeh.RoutineReady.RotuineReadyWidget"
+struct RoutineReadyWidgetControl: ControlWidget {
+    static let kind: String = "lucastohmeh.RoutineReady.RoutineReadyWidget"
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(
@@ -30,7 +30,7 @@ struct RotuineReadyWidgetControl: ControlWidget {
     }
 }
 
-extension RotuineReadyWidgetControl {
+extension RoutineReadyWidgetControl {
     struct Value {
         var isRunning: Bool
         var name: String
@@ -38,12 +38,12 @@ extension RotuineReadyWidgetControl {
 
     struct Provider: AppIntentControlValueProvider {
         func previewValue(configuration: TimerConfiguration) -> Value {
-            RotuineReadyWidgetControl.Value(isRunning: false, name: configuration.timerName)
+            RoutineReadyWidgetControl.Value(isRunning: false, name: configuration.timerName)
         }
 
         func currentValue(configuration: TimerConfiguration) async throws -> Value {
             let isRunning = true // Check if the timer is running
-            return RotuineReadyWidgetControl.Value(isRunning: isRunning, name: configuration.timerName)
+            return RoutineReadyWidgetControl.Value(isRunning: isRunning, name: configuration.timerName)
         }
     }
 }

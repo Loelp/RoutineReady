@@ -1,6 +1,6 @@
 //
-//  RotuineReadyWidget.swift
-//  RotuineReadyWidget
+//  RoutineReadyWidget.swift
+//  RoutineReadyWidget
 //
 //  Created by Lucas Tohmeh on 5/10/2026.
 //
@@ -41,7 +41,7 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationAppIntent
 }
 
-struct RotuineReadyWidgetEntryView : View {
+struct RoutineReadyWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
@@ -55,12 +55,12 @@ struct RotuineReadyWidgetEntryView : View {
     }
 }
 
-struct RotuineReadyWidget: Widget {
-    let kind: String = "RotuineReadyWidget"
+struct RoutineReadyWidget: Widget {
+    let kind: String = "RoutineReadyWidget"
 
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
-            RotuineReadyWidgetEntryView(entry: entry)
+            RoutineReadyWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
     }
@@ -81,7 +81,7 @@ extension ConfigurationAppIntent {
 }
 
 #Preview(as: .systemSmall) {
-    RotuineReadyWidget()
+    RoutineReadyWidget()
 } timeline: {
     SimpleEntry(date: .now, configuration: .smiley)
     SimpleEntry(date: .now, configuration: .starEyes)

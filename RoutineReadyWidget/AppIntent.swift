@@ -1,6 +1,6 @@
 //
 //  AppIntent.swift
-//  RotuineReadyWidget
+//  RoutineReadyWidget
 //
 //  Created by Lucas Tohmeh on 5/10/2026.
 //
