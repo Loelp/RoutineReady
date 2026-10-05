@@ -1,88 +1,123 @@
-//
-//  RoutineReadyWidget.swift
-//  RoutineReadyWidget
-//
-//  Created by Lucas Tohmeh on 5/10/2026.
-//
-
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
-struct Provider: AppIntentTimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
-    }
-
-    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
-    }
-    
-    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
-        }
-
-        return Timeline(entries: entries, policy: .atEnd)
-    }
-
-//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
-}
-
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let configuration: ConfigurationAppIntent
-}
-
-struct RoutineReadyWidgetEntryView : View {
-    var entry: Provider.Entry
-
-    var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Favorite Emoji:")
-            Text(entry.configuration.favoriteEmoji)
-        }
-    }
-}
-
+/// "Next inspection": where the property manager needs to be next, glanceable between stops.
 struct RoutineReadyWidget: Widget {
-    let kind: String = "RoutineReadyWidget"
+    let kind = "RoutineReadyWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
-            RoutineReadyWidgetEntryView(entry: entry)
+        StaticConfiguration(kind: kind, provider: NextInspectionProvider()) { entry in
+            NextInspectionWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
+        .configurationDisplayName("Next inspection")
+        .description("Your next routine inspection today and the urgent maintenance backlog.")
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }
 }
 
-extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
+struct NextInspectionWidgetView: View {
+    let entry: NextInspectionEntry
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        switch family {
+        case .accessoryRectangular:
+            lockScreenView
+        case .systemMedium:
+            HStack(alignment: .top) {
+                nextInspectionView
+                Spacer()
+                urgentItemsView
+                    .frame(maxWidth: 130, alignment: .leading)
+            }
+        default:
+            nextInspectionView
+        }
     }
-    
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
+
+    private var nextInspectionView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("NEXT INSPECTION")
+                .font(.caption2.bold())
+                .foregroundStyle(.secondary)
+            if let inspection = entry.inspection {
+                Text(timeText(inspection.scheduledAt, withAmPm: true))
+                    .font(.title2.bold())
+                Text(inspection.address)
+                    .font(.headline)
+                    .lineLimit(2)
+                Text(inspection.suburb)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text(emptyText)
+                    .font(.headline)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var urgentItemsView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(entry.urgentMaintenanceCount > 0 ? .red : .secondary)
+            Text(urgentText)
+                .font(.subheadline)
+        }
+    }
+
+    /// e.g. "11:15 · 14 Rose St, Yagoona"
+    private var lockScreenView: some View {
+        VStack(alignment: .leading) {
+            Text("Next inspection")
+                .font(.caption.bold())
+            if let inspection = entry.inspection {
+                Text("\(timeText(inspection.scheduledAt, withAmPm: false)) · \(inspection.address), \(inspection.suburb)")
+                    .lineLimit(2)
+            } else {
+                Text(emptyText)
+            }
+        }
+    }
+
+    private var emptyText: String {
+        return entry.hasSnapshot ? "No more inspections today" : "Open RoutineReady to load today's run sheet"
+    }
+
+    private var urgentText: String {
+        switch entry.urgentMaintenanceCount {
+        case 0: return "No urgent maintenance items"
+        case 1: return "1 urgent item needs landlord approval"
+        default: return "\(entry.urgentMaintenanceCount) urgent items need landlord approval"
+        }
+    }
+
+    /// Sydney time, e.g. "11:15 am" or "11:15".
+    private func timeText(_ date: Date, withAmPm: Bool) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_AU")
+        formatter.timeZone = TimeZone(identifier: "Australia/Sydney")
+        formatter.dateFormat = withAmPm ? "h:mm a" : "h:mm"
+        return formatter.string(from: date)
     }
 }
 
 #Preview(as: .systemSmall) {
     RoutineReadyWidget()
 } timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+    NextInspectionProvider.sampleEntry
+    NextInspectionEntry(date: Date(), inspection: nil, urgentMaintenanceCount: 0, hasSnapshot: true)
+}
+
+#Preview(as: .systemMedium) {
+    RoutineReadyWidget()
+} timeline: {
+    NextInspectionProvider.sampleEntry
+}
+
+#Preview(as: .accessoryRectangular) {
+    RoutineReadyWidget()
+} timeline: {
+    NextInspectionProvider.sampleEntry
 }
