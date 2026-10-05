@@ -119,6 +119,11 @@
 			path = RoutineReadyShare;
 			sourceTree = "<group>";
 		};
+		AD7D7F013073CB0000440D71 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +172,7 @@
 			children = (
 				AD7D702F3073CB3900440D71 /* RoutineReadyWidgetExtension.entitlements */,
 				AD7D6FD53073CA0600440D71 /* RoutineReady */,
+				AD7D7F013073CB0000440D71 /* Shared */,
 				AD7D6FE33073CA0700440D71 /* RoutineReadyTests */,
 				AD7D6FED3073CA0700440D71 /* RoutineReadyUITests */,
 				AD7D70073073CAC700440D71 /* RoutineReadyWidget */,
@@ -217,6 +223,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				AD7D6FD53073CA0600440D71 /* RoutineReady */,
+				AD7D7F013073CB0000440D71 /* Shared */,
 			);
 			name = RoutineReady;
 			packageProductDependencies = (
@@ -285,6 +292,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				AD7D70073073CAC700440D71 /* RoutineReadyWidget */,
+				AD7D7F013073CB0000440D71 /* Shared */,
 			);
 			name = RoutineReadyWidgetExtension;
 			packageProductDependencies = (
@@ -307,6 +315,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				AD7D70203073CAD700440D71 /* RoutineReadyShare */,
+				AD7D7F013073CB0000440D71 /* Shared */,
 			);
 			name = RoutineReadyShare;
 			packageProductDependencies = (
