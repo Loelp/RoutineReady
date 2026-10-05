@@ -818,7 +818,7 @@
 				DEVELOPMENT_TEAM = Z992574579;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RoutineReadyShare/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RoutineReadyShare;
+				INFOPLIST_KEY_CFBundleDisplayName = "Add to inspection";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -847,7 +847,7 @@
 				DEVELOPMENT_TEAM = Z992574579;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RoutineReadyShare/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = RoutineReadyShare;
+				INFOPLIST_KEY_CFBundleDisplayName = "Add to inspection";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
