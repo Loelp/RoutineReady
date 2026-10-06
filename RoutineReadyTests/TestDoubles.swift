@@ -7,7 +7,7 @@ struct FixedClock: DateProviding {
 }
 
 class WidgetSnapshotSpy: WidgetSnapshotWriting {
-    private(set) var refreshCount = 0
+    var refreshCount = 0
 
     func refreshWidgetSnapshot() {
         refreshCount += 1
@@ -63,7 +63,6 @@ class InspectionFixture {
     }
 
     // puts an inspection straight into the repository (skips the booking rules) - handy for setting up history
-    @discardableResult
     func existingInspection(at scheduledAt: Date, status: InspectionStatus = .completed) throws -> RoutineInspection {
         let inspection = RoutineInspection(
             id: UUID(), propertyID: property.id, scheduledAt: scheduledAt,
@@ -81,14 +80,5 @@ class InspectionFixture {
             noticeServedAt: noticeServedAt ?? clock.now,
             tenantConsentRecorded: tenantConsent
         )
-    }
-}
-
-extension XCTestCase {
-    // checks that the code throws exactly this error
-    func assertThrows<E: Error & Equatable>(_ expected: E, file: StaticString = #filePath, line: UInt = #line, _ body: () throws -> Void) {
-        XCTAssertThrowsError(try body(), file: file, line: line) { error in
-            XCTAssertEqual(error as? E, expected, file: file, line: line)
-        }
     }
 }

@@ -18,8 +18,8 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
     }
 
     func test_scheduling_rejectsSixDaysNotice_andSuggestsEarliestLawfulDate() {
-        assertThrows(InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 14))) {
-            _ = try fixture.book(sydney(2026, 10, 13, 10, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 13, 10, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 14)))
         }
         let message = InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 14)).errorDescription
         XCTAssertEqual(message, "This tenant needs 7 days written notice. The earliest lawful date is Wed 14 Oct.")
@@ -32,22 +32,22 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
     func test_scheduling_earliestLawfulDate_skipsSundaysAndPublicHolidays() {
         fixture.holidays.holidays[sydney(2026, 10, 19)] = "Test Holiday"
         // notice on Sun 11 Oct -> 7 days later is Sun 18 Oct, Mon 19 Oct is a holiday, so it should be Tue 20 Oct
-        assertThrows(InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 20))) {
-            _ = try fixture.book(sydney(2026, 10, 16, 10, 0), noticeServedAt: sydney(2026, 10, 11, 12, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 16, 10, 0), noticeServedAt: sydney(2026, 10, 11, 12, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.insufficientNotice(earliestLawfulDate: sydney(2026, 10, 20)))
         }
     }
 
     func test_scheduling_rejectsSunday() {
-        assertThrows(InspectionSchedulingError.sundayOrPublicHoliday(holidayName: nil)) {
-            _ = try fixture.book(sydney(2026, 10, 18, 10, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 18, 10, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.sundayOrPublicHoliday(holidayName: nil))
         }
     }
 
     func test_scheduling_rejectsPublicHoliday() {
         fixture.holidays.holidays[sydney(2026, 10, 16)] = "Test Holiday"
 
-        assertThrows(InspectionSchedulingError.sundayOrPublicHoliday(holidayName: "Test Holiday")) {
-            _ = try fixture.book(sydney(2026, 10, 16, 10, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 16, 10, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.sundayOrPublicHoliday(holidayName: "Test Holiday"))
         }
     }
 
@@ -56,43 +56,43 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
     }
 
     func test_scheduling_rejects8pmStart() {
-        assertThrows(InspectionSchedulingError.outsidePermittedHours) {
-            _ = try fixture.book(sydney(2026, 10, 15, 20, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 15, 20, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.outsidePermittedHours)
         }
     }
 
     func test_scheduling_rejectsTimeThatHasAlreadyPassed() {
-        assertThrows(InspectionSchedulingError.inspectionInThePast) {
-            _ = try fixture.book(sydney(2026, 10, 7, 8, 30), tenantConsent: true)
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 7, 8, 30), tenantConsent: true)) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.inspectionInThePast)
         }
     }
 
     func test_scheduling_rejectsFifthInspectionInRolling12Months() throws {
-        try fixture.existingInspection(at: sydney(2025, 11, 10, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2025, 11, 10, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
 
-        assertThrows(InspectionSchedulingError.annualLimitReached(nextAvailableDate: sydney(2026, 11, 10, 10, 0))) {
-            _ = try fixture.book(sydney(2026, 10, 15, 10, 0))
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 15, 10, 0))) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.annualLimitReached(nextAvailableDate: sydney(2026, 11, 10, 10, 0)))
         }
     }
 
     func test_scheduling_annualLimitIsRolling_notCalendarYear() throws {
         // 4 inspections in the last 13 months, but the first one is more than 12 months before the new date
-        try fixture.existingInspection(at: sydney(2025, 9, 15, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 1, 12, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 4, 13, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 7, 13, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2025, 9, 15, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 1, 12, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 4, 13, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 7, 13, 10, 0))
 
         XCTAssertNoThrow(try fixture.book(sydney(2026, 10, 15, 10, 0)))
     }
 
     func test_scheduling_ignoresCancelledInspections_whenCountingAnnualLimit() throws {
-        try fixture.existingInspection(at: sydney(2025, 11, 10, 10, 0), status: .cancelled)
-        try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2025, 11, 10, 10, 0), status: .cancelled)
+        _ = try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
 
         XCTAssertNoThrow(try fixture.book(sydney(2026, 10, 15, 10, 0)))
     }
@@ -102,12 +102,12 @@ final class ScheduleRoutineInspectionTests: XCTestCase {
         let agreed = try fixture.book(sydney(2026, 10, 8, 20, 30), tenantConsent: true)
         XCTAssertTrue(agreed.tenantConsentRecorded)
 
-        try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 2, 9, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 5, 11, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 8, 10, 10, 0))
 
-        assertThrows(InspectionSchedulingError.annualLimitReached(nextAvailableDate: sydney(2027, 2, 9, 10, 0))) {
-            _ = try fixture.book(sydney(2026, 10, 9, 10, 0), tenantConsent: true)
+        XCTAssertThrowsError(try fixture.book(sydney(2026, 10, 9, 10, 0), tenantConsent: true)) { error in
+            XCTAssertEqual(error as? InspectionSchedulingError, InspectionSchedulingError.annualLimitReached(nextAvailableDate: sydney(2027, 2, 9, 10, 0)))
         }
     }
 
