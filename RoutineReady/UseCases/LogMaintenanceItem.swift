@@ -7,7 +7,6 @@ struct LogMaintenanceItem {
     let clock: DateProviding
     let widgetSnapshot: WidgetSnapshotWriting
 
-    @discardableResult
     func execute(inspectionID: UUID, room: String, description: String, severity: MaintenanceSeverity, photoFilename: String? = nil) throws -> MaintenanceItem {
         guard let inspection = try inspections.inspection(withID: inspectionID) else {
             throw MaintenanceLoggingError.inspectionNotFound

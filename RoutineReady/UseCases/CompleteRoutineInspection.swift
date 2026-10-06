@@ -8,7 +8,6 @@ struct CompleteRoutineInspection {
     let widgetSnapshot: WidgetSnapshotWriting
     var calendar: Calendar = .sydney
 
-    @discardableResult
     func execute(inspectionID: UUID, conditionSummary: String) throws -> RoutineInspection {
         guard var inspection = try inspections.inspection(withID: inspectionID) else {
             throw InspectionCompletionError.inspectionNotFound

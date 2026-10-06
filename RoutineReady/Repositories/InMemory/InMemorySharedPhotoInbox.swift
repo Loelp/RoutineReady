@@ -2,7 +2,7 @@ import Foundation
 
 // Fake inbox for the unit tests and SwiftUI previews
 class InMemorySharedPhotoInbox: SharedPhotoInbox {
-    private(set) var records: [SharedInboxRecord]
+    var records: [SharedInboxRecord]
 
     init(_ records: [SharedInboxRecord] = []) {
         self.records = records

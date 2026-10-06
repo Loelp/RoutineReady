@@ -11,7 +11,6 @@ struct ImportSharedPhotos {
     let inbox: SharedPhotoInbox
     let logMaintenanceItem: LogMaintenanceItem
 
-    @discardableResult
     func execute() throws -> SharedPhotoImportResult {
         var result = SharedPhotoImportResult()
 
@@ -22,7 +21,7 @@ struct ImportSharedPhotos {
             }
 
             do {
-                try logMaintenanceItem.execute(
+                _ = try logMaintenanceItem.execute(
                     inspectionID: record.inspectionID,
                     room: record.room,
                     description: description,

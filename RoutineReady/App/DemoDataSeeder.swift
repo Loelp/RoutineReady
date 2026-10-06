@@ -30,23 +30,23 @@ struct DemoDataSeeder {
         // today's run sheet - if today is a Sunday or public holiday, mark them as tenant-agreed
         let todayIsRestricted = calendar.component(.weekday, from: clock.now) == 1
             || GazettedNSWPublicHolidays().holidayName(on: clock.now) != nil
-        try addInspection(kitchenerPde, at: today(9, 0), consent: todayIsRestricted)
-        try addInspection(roseSt, at: today(11, 15), consent: todayIsRestricted)
-        try addInspection(wattleSt, at: today(14, 30), consent: todayIsRestricted)
-        try addInspection(lyleSt, at: today(16, 45), consent: todayIsRestricted)
+        _ = try addInspection(kitchenerPde, at: today(9, 0), consent: todayIsRestricted)
+        _ = try addInspection(roseSt, at: today(11, 15), consent: todayIsRestricted)
+        _ = try addInspection(wattleSt, at: today(14, 30), consent: todayIsRestricted)
+        _ = try addInspection(lyleSt, at: today(16, 45), consent: todayIsRestricted)
         // if it's already late, add one more (tenant asked for after work) so the widget has something to show
         let inAnHour = clock.now.addingTimeInterval(60 * 60)
         if inAnHour > today(16, 45) && calendar.isDate(inAnHour, inSameDayAs: clock.now) {
-            try addInspection(cairdsAve, at: inAnHour, consent: true)
+            _ = try addInspection(cairdsAve, at: inAnHour, consent: true)
         }
 
         // past inspections. Rose St has 3 in the last 12 months + today's = 4, so booking another one gets refused
         let roseJanuary = try addInspection(roseSt, at: weekday(daysAgo: 270), status: .completed)
-        try addInspection(roseSt, at: weekday(daysAgo: 180), status: .completed)
+        _ = try addInspection(roseSt, at: weekday(daysAgo: 180), status: .completed)
         let roseJuly = try addInspection(roseSt, at: weekday(daysAgo: 90), status: .completed)
-        try addInspection(kitchenerPde, at: weekday(daysAgo: 120), status: .completed)
-        try addInspection(kitchenerPde, at: weekday(daysAgo: 30), status: .cancelled)
-        try addInspection(cairdsAve, at: weekday(daysAgo: 200), status: .completed)
+        _ = try addInspection(kitchenerPde, at: weekday(daysAgo: 120), status: .completed)
+        _ = try addInspection(kitchenerPde, at: weekday(daysAgo: 30), status: .cancelled)
+        _ = try addInspection(cairdsAve, at: weekday(daysAgo: 200), status: .completed)
 
         try addItem(to: roseJuly, room: "Bathroom", "Exposed wiring behind vanity", .urgent)
         try addItem(to: roseJuly, room: "Laundry", "Tap drips when turned off", .routine)
@@ -61,7 +61,6 @@ struct DemoDataSeeder {
         return property
     }
 
-    @discardableResult
     private func addInspection(_ property: Property, at date: Date, status: InspectionStatus = .scheduled, consent: Bool = false) throws -> RoutineInspection {
         let inspection = RoutineInspection(
             id: UUID(),

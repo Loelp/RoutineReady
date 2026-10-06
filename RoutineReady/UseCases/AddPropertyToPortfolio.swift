@@ -5,7 +5,6 @@ import Foundation
 struct AddPropertyToPortfolio {
     let properties: PropertyRepository
 
-    @discardableResult
     func execute(address: String, suburb: String, tenantName: String, landlordName: String, tenancyStartDate: Date) throws -> Property {
         let property = Property(
             id: UUID(),

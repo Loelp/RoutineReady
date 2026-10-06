@@ -25,7 +25,7 @@ class ScheduleInspectionViewModel {
     // returns true if it booked, so the sheet can close
     func book() -> Bool {
         do {
-            try scheduleRoutineInspection.execute(
+            _ = try scheduleRoutineInspection.execute(
                 propertyID: propertyID,
                 scheduledAt: scheduledAt,
                 noticeServedAt: noticeServedAt,

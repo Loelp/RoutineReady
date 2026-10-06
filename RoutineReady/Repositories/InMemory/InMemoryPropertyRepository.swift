@@ -2,7 +2,7 @@ import Foundation
 
 // Fake repository that keeps everything in an array. Used by the unit tests and SwiftUI previews.
 class InMemoryPropertyRepository: PropertyRepository {
-    private(set) var stored: [Property]
+    var stored: [Property]
 
     init(_ properties: [Property] = []) {
         stored = properties

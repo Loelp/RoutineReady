@@ -43,7 +43,7 @@ class WidgetSnapshotWriter: WidgetSnapshotWriting {
             urgentMaintenanceCount: try inspections.urgentUnresolvedMaintenanceItems().count,
             generatedAt: clock.now
         )
-        try AppGroupJSON.encode(snapshot).write(to: AppGroup.widgetSnapshotURL, options: .atomic)
+        try AppGroupJSON.makeEncoder().encode(snapshot).write(to: AppGroup.widgetSnapshotURL, options: .atomic)
     }
 
     private func writeShareInspections(stops: [RunSheetStop]) throws {
@@ -55,6 +55,6 @@ class WidgetSnapshotWriter: WidgetSnapshotWriting {
                 scheduledAt: stop.inspection.scheduledAt
             ))
         }
-        try AppGroupJSON.encode(shareable).write(to: AppGroup.shareInspectionsURL, options: .atomic)
+        try AppGroupJSON.makeEncoder().encode(shareable).write(to: AppGroup.shareInspectionsURL, options: .atomic)
     }
 }

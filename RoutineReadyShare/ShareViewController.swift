@@ -29,7 +29,7 @@ class ShareViewController: UIViewController {
     // today's inspections, from the list the app saved
     private func loadShareableInspections() -> [ShareableInspection] {
         guard let data = try? Data(contentsOf: AppGroup.shareInspectionsURL),
-              let inspections = try? AppGroupJSON.decode([ShareableInspection].self, from: data) else {
+              let inspections = try? AppGroupJSON.makeDecoder().decode([ShareableInspection].self, from: data) else {
             return []
         }
         return inspections
@@ -65,7 +65,7 @@ class ShareViewController: UIViewController {
                 do {
                     try jpegData.write(to: AppGroup.photosDirectory.appending(path: record.photoFilename))
                     let recordURL = AppGroup.inboxDirectory.appending(path: "\(record.id.uuidString).json")
-                    try AppGroupJSON.encode(record).write(to: recordURL, options: .atomic)
+                    try AppGroupJSON.makeEncoder().encode(record).write(to: recordURL, options: .atomic)
                 } catch {
                     print("Could not save shared photo: \(error)")
                 }

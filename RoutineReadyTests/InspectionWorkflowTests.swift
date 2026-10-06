@@ -14,8 +14,8 @@ final class InspectionWorkflowTests: XCTestCase {
     func test_completing_requiresConditionSummary() throws {
         let inspection = try fixture.existingInspection(at: sydney(2026, 10, 7, 8, 30), status: .scheduled)
 
-        assertThrows(InspectionCompletionError.missingConditionSummary) {
-            try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "   ")
+        XCTAssertThrowsError(try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "   ")) { error in
+            XCTAssertEqual(error as? InspectionCompletionError, InspectionCompletionError.missingConditionSummary)
         }
     }
 
@@ -33,24 +33,24 @@ final class InspectionWorkflowTests: XCTestCase {
     func test_completing_rejectsCancelledInspection() throws {
         let inspection = try fixture.existingInspection(at: sydney(2026, 10, 7, 8, 30), status: .cancelled)
 
-        assertThrows(InspectionCompletionError.inspectionCancelled) {
-            try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "Clean and well kept.")
+        XCTAssertThrowsError(try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "Clean and well kept.")) { error in
+            XCTAssertEqual(error as? InspectionCompletionError, InspectionCompletionError.inspectionCancelled)
         }
     }
 
     func test_completing_rejectsInspectionBookedForALaterDay() throws {
         let inspection = try fixture.existingInspection(at: sydney(2026, 10, 8, 9, 0), status: .scheduled)
 
-        assertThrows(InspectionCompletionError.notYetDue) {
-            try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "Clean and well kept.")
+        XCTAssertThrowsError(try fixture.complete.execute(inspectionID: inspection.id, conditionSummary: "Clean and well kept.")) { error in
+            XCTAssertEqual(error as? InspectionCompletionError, InspectionCompletionError.notYetDue)
         }
     }
 
     func test_loggingUrgentItem_requiresRoom() throws {
         let inspection = try fixture.existingInspection(at: sydney(2026, 10, 7, 8, 30), status: .scheduled)
 
-        assertThrows(MaintenanceLoggingError.urgentItemNeedsRoom) {
-            try fixture.logMaintenanceItem.execute(inspectionID: inspection.id, room: " ", description: "Exposed wiring", severity: .urgent)
+        XCTAssertThrowsError(try fixture.logMaintenanceItem.execute(inspectionID: inspection.id, room: " ", description: "Exposed wiring", severity: .urgent)) { error in
+            XCTAssertEqual(error as? MaintenanceLoggingError, MaintenanceLoggingError.urgentItemNeedsRoom)
         }
     }
 
@@ -104,10 +104,10 @@ final class InspectionWorkflowTests: XCTestCase {
     }
 
     func test_propertyDetail_countsInspectionsUsedInLast12Months() throws {
-        try fixture.existingInspection(at: sydney(2025, 9, 1, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 3, 2, 10, 0))
-        try fixture.existingInspection(at: sydney(2026, 6, 1, 10, 0), status: .cancelled)
-        try fixture.existingInspection(at: sydney(2026, 9, 1, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2025, 9, 1, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 3, 2, 10, 0))
+        _ = try fixture.existingInspection(at: sydney(2026, 6, 1, 10, 0), status: .cancelled)
+        _ = try fixture.existingInspection(at: sydney(2026, 9, 1, 10, 0))
         let load = LoadPropertyDetail(properties: fixture.properties, inspections: fixture.inspections, clock: fixture.clock)
 
         let detail = try load.execute(propertyID: fixture.property.id)

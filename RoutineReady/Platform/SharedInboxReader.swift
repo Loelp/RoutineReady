@@ -15,7 +15,7 @@ class SharedInboxReader: SharedPhotoInbox {
         for file in files where file.pathExtension == "json" {
             // skip anything that doesn't decode instead of failing the whole import
             if let data = try? Data(contentsOf: file),
-               let record = try? AppGroupJSON.decode(SharedInboxRecord.self, from: data) {
+               let record = try? AppGroupJSON.makeDecoder().decode(SharedInboxRecord.self, from: data) {
                 records.append(record)
             }
         }
@@ -23,7 +23,7 @@ class SharedInboxReader: SharedPhotoInbox {
     }
 
     func save(_ record: SharedInboxRecord) throws {
-        try AppGroupJSON.encode(record).write(to: fileURL(for: record), options: .atomic)
+        try AppGroupJSON.makeEncoder().encode(record).write(to: fileURL(for: record), options: .atomic)
     }
 
     func remove(_ record: SharedInboxRecord) throws {
