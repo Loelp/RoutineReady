@@ -2,7 +2,7 @@ import Foundation
 
 // What the widget shows. The app saves this to widget-snapshot.json after every change,
 // and the widget just reads the file (it never opens Core Data).
-nonisolated struct WidgetSnapshot: Codable, Equatable {
+struct WidgetSnapshot: Codable, Equatable {
     struct UpcomingInspection: Codable, Equatable {
         let scheduledAt: Date
         let address: String

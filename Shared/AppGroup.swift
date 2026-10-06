@@ -2,7 +2,7 @@ import Foundation
 
 // Shared folder between the app, the widget and the share extension.
 // Only JSON files and photos go in here - the Core Data database stays in the app's own container.
-nonisolated enum AppGroup {
+enum AppGroup {
     static let identifier = "group.com.lucas.routineready"
 
     static var containerURL: URL {
@@ -44,17 +44,17 @@ nonisolated enum AppGroup {
     }
 }
 
-// All three targets read and write the same files, so the JSON date format is set in one place.
-nonisolated enum AppGroupJSON {
-    static func encode<T: Encodable>(_ value: T) throws -> Data {
+// All three targets read and write the same files, so they all need to use the same date format
+enum AppGroupJSON {
+    static func makeEncoder() -> JSONEncoder {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        return try encoder.encode(value)
+        return encoder
     }
 
-    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+    static func makeDecoder() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(type, from: data)
+        return decoder
     }
 }

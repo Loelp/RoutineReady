@@ -52,7 +52,7 @@ struct NextInspectionProvider: TimelineProvider {
         guard let data = try? Data(contentsOf: AppGroup.widgetSnapshotURL) else {
             return nil
         }
-        return try? AppGroupJSON.decode(WidgetSnapshot.self, from: data)
+        return try? AppGroupJSON.makeDecoder().decode(WidgetSnapshot.self, from: data)
     }
 
     // fake data for the widget gallery
