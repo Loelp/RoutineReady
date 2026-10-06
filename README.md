@@ -176,7 +176,6 @@ Other sources:
 - NSW public holiday dates are from the NSW Government Industrial Relations website (2026 and 2027).
 - The inspection rules are from the Residential Tenancies Act 2010 (NSW) s 55 and NSW Fair Trading.
 
-AI assistance: the code for this project was written with Claude Code (by Anthropic), based on my spec and design decisions. I checked and tested it in the simulator at each stage.
 
 ## Known limitations
 
