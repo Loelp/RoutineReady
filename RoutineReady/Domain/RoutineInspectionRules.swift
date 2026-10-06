@@ -5,7 +5,8 @@ import Foundation
 enum RoutineInspectionRules {
     static let minimumNoticeDays = 7
     static let annualLimit = 4                 // max inspections in any 12 months
-    static let permittedStartHours = 8..<20    // 8:00 am up to 7:59 pm
+    static let earliestStartHour = 8     // 8:00 am
+    static let latestStartHour = 19      // up to 7:59 pm
 
     // the date 12 months before the given date (start of the rolling window)
     static func annualWindowStart(endingAt date: Date, calendar: Calendar = .sydney) -> Date {

@@ -20,7 +20,7 @@ class AddPropertyViewModel {
     // returns true if it saved, so the sheet can close
     func save() -> Bool {
         do {
-            try addPropertyToPortfolio.execute(address: address, suburb: suburb, tenantName: tenantName,
+            _ = try addPropertyToPortfolio.execute(address: address, suburb: suburb, tenantName: tenantName,
                                                landlordName: landlordName, tenancyStartDate: tenancyStartDate)
             return true
         } catch {

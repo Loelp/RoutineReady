@@ -3,8 +3,8 @@ import Foundation
 // Fake repository for the unit tests and SwiftUI previews.
 // Each filter here matches the predicate in CoreDataInspectionRepository.
 class InMemoryInspectionRepository: InspectionRepository {
-    private(set) var inspections: [RoutineInspection]
-    private(set) var maintenanceItems: [MaintenanceItem]
+    var inspections: [RoutineInspection]
+    var maintenanceItems: [MaintenanceItem]
 
     init(inspections: [RoutineInspection] = [], maintenanceItems: [MaintenanceItem] = []) {
         self.inspections = inspections

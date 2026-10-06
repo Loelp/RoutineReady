@@ -63,7 +63,7 @@ class AppDependencies {
     // file any photos from the share extension, and update the widget
     func appBecameActive() {
         do {
-            try importSharedPhotos.execute()
+            _ = try importSharedPhotos.execute()
         } catch {
             print("Could not file shared photos: \(error)")
         }

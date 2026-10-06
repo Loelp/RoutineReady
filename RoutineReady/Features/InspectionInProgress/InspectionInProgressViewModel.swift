@@ -56,7 +56,7 @@ class InspectionInProgressViewModel {
             if let photoData = photoData {
                 photoFilename = try storeDefectPhoto.execute(imageData: photoData)
             }
-            try logMaintenanceItem.execute(inspectionID: inspectionID, room: room, description: itemDescription,
+            _ = try logMaintenanceItem.execute(inspectionID: inspectionID, room: room, description: itemDescription,
                                            severity: severity, photoFilename: photoFilename)
             room = ""
             itemDescription = ""
@@ -82,7 +82,7 @@ class InspectionInProgressViewModel {
 
     func complete() {
         do {
-            try completeRoutineInspection.execute(inspectionID: inspectionID, conditionSummary: conditionSummary)
+            _ = try completeRoutineInspection.execute(inspectionID: inspectionID, conditionSummary: conditionSummary)
             completionError = nil
             load()
         } catch {

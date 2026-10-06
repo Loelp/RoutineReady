@@ -7,7 +7,6 @@ struct ReassignSharedPhoto {
     let inbox: SharedPhotoInbox
     let importSharedPhotos: ImportSharedPhotos
 
-    @discardableResult
     func execute(record: SharedInboxRecord, toInspectionID inspectionID: UUID) throws -> SharedPhotoImportResult {
         var updatedRecord = record
         updatedRecord.inspectionID = inspectionID

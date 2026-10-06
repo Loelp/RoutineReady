@@ -15,7 +15,6 @@ struct ScheduleRoutineInspection {
     let widgetSnapshot: WidgetSnapshotWriting
     var calendar: Calendar = .sydney
 
-    @discardableResult
     func execute(propertyID: UUID, scheduledAt: Date, noticeServedAt: Date, tenantConsentRecorded: Bool) throws -> RoutineInspection {
         if try properties.property(withID: propertyID) == nil {
             throw InspectionSchedulingError.propertyNotFound
@@ -77,7 +76,7 @@ struct ScheduleRoutineInspection {
 
     private func checkStartTime(_ scheduledAt: Date) throws {
         let hour = calendar.component(.hour, from: scheduledAt)
-        if !RoutineInspectionRules.permittedStartHours.contains(hour) {
+        if hour < RoutineInspectionRules.earliestStartHour || hour > RoutineInspectionRules.latestStartHour {
             throw InspectionSchedulingError.outsidePermittedHours
         }
     }
